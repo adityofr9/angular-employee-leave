@@ -1,5 +1,7 @@
 <app-breadcrumb></app-breadcrumb>
-<ng-container>
-  <summary [filter]="defaultFilter"></summary>
-  <average-user-app [filter]="defaultFilter"></average-user-app>
-</ng-container>
+
+<div class="panel custom-table mb-4">
+  <div class="flex items-center mb-3">
+      <h4 class="m-0 font-semibold text-[24px] leading-[36px]">Welcome, {{user?.firstName + ' ' + user?.lastName}}</h4>
+  </div>
+</div>

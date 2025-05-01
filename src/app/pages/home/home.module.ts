@@ -5,8 +5,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { LibaryModule } from 'src/app/shared/library/library.module';
 import { BreadCrumbModule } from "../../shared/widgets/breadcrumb/breadcrumb.module";
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { SummaryComponent } from './components/summary/summary.component';
-import { AverageUserAppComponent } from './components/average-user-app/average-user-app.component';
 
 const routes: Routes = [
   {
@@ -24,8 +22,6 @@ const routes: Routes = [
 ],
   declarations: [
     HomeComponent,
-    SummaryComponent,
-    AverageUserAppComponent
   ],
   schemas:[
     CUSTOM_ELEMENTS_SCHEMA

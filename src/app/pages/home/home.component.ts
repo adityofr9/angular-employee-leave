@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { map, mergeMap, startWith, Subject, timer } from 'rxjs';
+import { AuthService } from 'src/app/api/auth/auth.service';
 import { HelperService } from 'src/app/services/helper.service';
 
 @Component({
@@ -19,13 +20,20 @@ export class HomeComponent implements OnInit {
       startWith(true)
   );
 
+  user: any;
+
   constructor(
-    private helper : HelperService
+    private helper : HelperService,
+    private auth: AuthService
   ) {}
 
   ngOnInit() {
     let start = this.helper.defaualtFilterDate().startDate;
     let end = this.helper.defaualtFilterDate().endDate;
     this.defaultFilter = {startDate:start,endDate:end};
+
+    this.auth.users$.subscribe(res=>{
+      this.user = res
+    })
   }
 }

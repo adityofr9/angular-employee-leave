@@ -43,8 +43,8 @@ export class AuthService {
   GET_UserData(){
     const userStr = localStorage.getItem('currentUser');
     if (userStr) {
-      this.user.next(userStr);
-      this.users = userStr;
+      this.user.next(JSON.parse(userStr));
+      this.users = JSON.parse(userStr);
     } else {
       this.logout();
     }

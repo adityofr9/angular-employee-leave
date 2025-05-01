@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { StorageMap } from '@ngx-pwa/local-storage';
 import { AuthService } from 'src/app/api/auth/auth.service';
 import { SessionsService } from 'src/app/core/sessions/sessions.service';
 
@@ -16,19 +17,14 @@ export class SignInComponent implements OnInit {
   isLoading: boolean = false;
   isPassword: boolean = false;
 
-  isLoadingAdfs: boolean = false;
-
-  // MARK: Bypass
-  // tempUser: any = {};
-
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    // private messageService: MessageService,
     private helper:HelperService,
-    private sessions: SessionsService
+    private sessions: SessionsService,
+    protected storage : StorageMap,
   ) { }
 
   ngOnInit() {
@@ -37,7 +33,8 @@ export class SignInComponent implements OnInit {
 
   setupForm(){
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],                       // use with dummyJSON
+      // email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
@@ -51,7 +48,6 @@ export class SignInComponent implements OnInit {
     this.isLoading = true; // Mulai loading
     this.loginForm.value.email.toLowerCase();
 
-    // Temp dummyJSON payload
     const payload = {
       email: this.loginForm.value.email,
       password: this.loginForm.value.password
@@ -59,16 +55,24 @@ export class SignInComponent implements OnInit {
 
     this.authService.login(payload).then(
       res=> {
-        if(res?.token){
-          this.helper.setStorage('token-x', res.token);
-          this.authService.token = res.token;
-          this.authService.GET_UserData();
-          setTimeout(() => {
-            this.isLoading = false;
-            this.sessions.loadSession();
-            this.router.navigate(['/u/dashboard']);
-          }, 1500);
+        if (res && res.length > 0) {
+          const admin = res.find((u: any) => u.role === 'role 1');
+          if (admin) {
+            localStorage.setItem('currentUser', JSON.stringify(admin));
+              setTimeout(() => {
+                this.isLoading = false;
+                this.sessions.loadSession();
+                this.router.navigate(['/u/dashboard']);
+              }, 1500);
+            return admin;
+          }
+          this.helper.showErrorAlert('Error', 'Login gagal!')
+          this.isLoading = false;
+          return null;
         }
+        this.helper.showErrorAlert('Error', 'Login gagal!')
+        this.isLoading = false;
+        return null;
       },
       error=>{
         this.isLoading = false; // Selesai loading
@@ -81,40 +85,9 @@ export class SignInComponent implements OnInit {
         } else {
           errorMessage = 'Terjadi kesalahan tak terduga. Silakan coba lagi nanti.';
         }
-        this.showError(errorMessage);
+        this.helper.showErrorAlert('Error', 'Login gagal!')
       }
     );
-  }
-
-  loginCMS(payload: any) {
-    this.authService.login(payload).then(res=>{
-      if(res?.data?.accessToken){
-        this.helper.setStorage('token-x', res.data.accessToken);
-        this.authService.token = res.data.accessToken;
-        this.authService.GET_UserData();
-        setTimeout(() => {
-          this.isLoading = false;
-          this.sessions.loadSession();
-          this.router.navigate(['/u/dashboard']);
-        }, 1500);
-      }
-    }).catch(error=>{
-      this.isLoading = false; // Selesai loading
-      this.isLoadingAdfs = false;
-        let errorMessage = 'An error occurred. Please try again.';
-        if (error.status === 401 || error.status === 400) {
-          errorMessage = 'Email atau password salah';
-        } else if (error.status === 0) {
-          errorMessage = 'Email atau password salah';
-        } else {
-          errorMessage = 'Terjadi kesalahan tak terduga. Silakan coba lagi nanti.';
-        }
-        this.showError(errorMessage);
-    });
-  }
-
-  showError(message: string) {
-    // this.messageService.add({ severity: 'error', summary: 'Login Failed', detail: message });
   }
 
   isFieldInvalid(field: string): boolean {

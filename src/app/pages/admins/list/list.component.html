@@ -1,0 +1,60 @@
+<div class="panel custom-table">
+  <div class="flex items-center justify-content-between mb-3">
+    <h4 class="text-[18px] lg:text-[24px]">History</h4>
+    <div class="ml-auto flex items-center">
+      <button pButton pRipple icon="pi pi-refresh"
+        class="shadow-none bg-transparent border text-[#4D5562] h-[36px] w-[40px]" (click)="getData()"></button>
+    </div>
+  </div>
+  <p-table #dt [columns]="list"
+    [first]="0"
+    [exportHeader]="'customExportHeader'"
+    [value]="list"
+    [scrollable]="true"
+    dataKey="id"
+    styleClass="rounded-md">
+    <ng-template pTemplate="header" class="bg-[#fff]">
+      <tr>
+        <th pSortableColumn="id" class="flex items-center" style="min-width: 100px">
+          ID
+          <p-sortIcon field="id" />
+        </th>
+        <th style="min-width: 200px">First Depan</th>
+        <th style="min-width: 200px">Lat belakang</th>
+        <th style="min-width: 200px">Email</th>
+        <th style="min-width: 200px">Birth of Date</th>
+        <th style="min-width: 200px">Gender</th>
+        <th style="width: 100px" class="action" alignFrozen="right" pFrozenColumn>
+          Action
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-user>
+      <tr>
+        <td>{{ user.id }}</td>
+        <td>{{ user.firstName }}</td>
+        <td>{{ user.lastName }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.bod | date:'dd - MMM - YYYY' }}</td>
+        <td>{{ user.gender }}</td>
+        <td class="action-list" alignFrozen="right" pFrozenColumn>
+          <div class="flex items-center border-1 border-[#E5E7EB] rounded-[8px] badge shadow-none">
+            <div class="btn border-0 shadow-none cursor-pointer text-[#B21CEA] hover:bg-[rgba(229,231,235,0.3)]"
+              [routerLink]="'/u/user-management/pre-registration/'+user.id" routerLinkActive="router-link-active">
+              <i class="pi pi-eye"></i>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="12" class="text-center">
+          <h4>No history data available</h4>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

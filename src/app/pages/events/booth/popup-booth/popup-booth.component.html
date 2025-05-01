@@ -1,0 +1,86 @@
+<div class="flex flex-col h-full p-4 lg:p-10">
+  <div class="mb-6 lg:mb-10 flex items-center">
+    <p class="text-xl lg:text-[28px] mb-0 font-bold">Add New Booth</p>
+    <div class="ml-auto">
+      <i class="cursor-pointer pi pi-times font-bold text-lg lg:text-2xl" (click)="onClose()"></i>
+    </div>
+  </div>
+  <div class="form-group w-full !mb- lg:!mb-11">
+    <p-iconField iconPosition="left" class="search">
+      <p-inputIcon styleClass="pi pi-search" />
+      <input
+        type="search"
+        pInputText
+        placeholder="Search ..."
+        class="!rounded-full"
+        [formControl]="searchBooth"
+      />
+    </p-iconField>
+  </div>
+
+  <!-- MARK: Scroll panel booth -->
+  <p-scrollPanel
+    [style]="{ width: '100%', height: '22vw' }"
+    styleClass="custom-scrollpanel"
+  >
+    <div
+      class="grid grid-cols-1 lg:grid-cols-2 lg:grid-flow-col gap-x-5"
+      [style.gridTemplateRows]="'repeat(' + rows + ', minmax(0, 1fr))'"
+    >
+      @for (opt of optData; track $index; let total = $count) {
+        <div class="form-group custom-toggleButton">
+          <p-toggleButton
+            [disabled]="!!opt.eventName && !!opt.eventId"
+            [onLabel]="opt.label"
+            [offLabel]="opt.label"
+            [onIcon]="'pi pi-check'"
+            [offIcon]="'pi pi-check'"
+            iconPos="right"
+            [(ngModel)]="opt.state"
+            (onChange)="onToggleChange($event, opt.id)"
+          />
+          @if (!!opt.eventId && !!opt.eventId) {
+            <label for="" class="truncate">is being used in {{ opt.eventName }}</label>
+          }
+        </div>
+      } @empty {
+        <div class="w-full lg:col-span-2 text-center">
+          <p class="!text-[#919191] italic">No Results Found</p>
+        </div>
+      }
+      <!-- <div class="form-group custom-toggleButton">
+        <p-toggleButton
+          onLabel="TEST"
+          offLabel="TEST"
+          onIcon="pi pi-check"
+          offIcon="pi pi-check"
+          iconPos="right"
+          ariaLabel="Do you confirm" />
+      </div>
+      <div class="form-group custom-toggleButton">
+        <p-toggleButton
+          disabled="true"
+          onLabel="TEST"
+          offLabel="TEST"
+          onIcon="pi pi-check"
+          offIcon="pi pi-check"
+          iconPos="right"
+          ariaLabel="Do you confirm" />
+          <label for="">is being used in Rakernas</label>
+      </div> -->
+    </div>
+  </p-scrollPanel>
+
+  <div class="flex justify-end mt-auto">
+    <button
+      pButton
+      pRipple
+      label="Save"
+      type="submit"
+      rounded="true"
+      class="primary hover:bg-blue-700"
+      (click)="onSubmit()"
+    ></button>
+    <!-- [disabled]="selectedIds.length == 0 || isLoading" -->
+  </div>
+</div>

@@ -1,0 +1,18 @@
+<div class="flex gap-3">
+  @for (item of actions; track $index) {
+  <button
+    class="bg-[indigo] hover:bg-blue-700 text-white font-bold py-3 px-10 rounded-full text-[18px] inline-flex items-center cursor-pointer {{
+      item.customClass
+    }} disabled:opacity-50"
+    (click)="action(item.slug)"
+    [disabled]="item.disabled ?? false"
+  >
+    @if (!!item.iconCustom && item.iconCustom !== '') {
+    <img src="{{ item.iconCustom }}" alt="{{ item.name }}" class="mr-2" />
+    } @if (!!item.icon && item.icon !== '') {
+    <i class="pi {{ item.icon }} font-bold" [class.mr-2]="!!item.name && item.name !== ''"></i>
+    }
+    <span>{{ item.name }}</span>
+  </button>
+  }
+</div>

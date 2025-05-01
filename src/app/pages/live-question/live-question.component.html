@@ -1,0 +1,78 @@
+<div
+  class="bg-live"
+  [ngStyle]="
+    eventData?.media?.backgroundImage
+      ? { 'background-image': 'url(' + eventData?.media?.backgroundImage + ')' }
+      : {}
+  "
+>
+  <div class="flex justify-center items-center h-full">
+    <div class="container mx-4 lg:mx-40">
+      <div class="flex items-center gap-4 mb-3">
+        <div class="bullet-red"></div>
+        <h2 class="!text-white">Live Question</h2>
+      </div>
+
+      <div class="panel p-8">
+        @for (pinned of listPinned; track $index) {
+          @if ($index === selectedQuestion) {
+            <div class="flex items-center gap-5 mb-3 min-h-[66px]">
+              @if (!pinned.profileUrl) {
+                <div class="avatar rounded-full h-[60px] w-[60px] bg-[#CCD4E9]">
+                  <div class="font-bold">{{ helper.getInitial(pinned?.name) }}</div>
+                </div>
+              } @else {
+                <img [src]="pinned?.profileUrl" alt="" class="w-[60px] h-[60px] rounded-full">
+              }
+              <h3>{{ pinned?.name }}</h3>
+            </div>
+            <div class="line-grey"></div>
+
+            <p-scrollPanel [style]="{ width: '100%', height: '312px' }" styleClass="custom-scrollpanel live min-h-[312px]">
+              <div class="flex items-center justify-center text-center">
+                <h2>{{ pinned?.text }}</h2>
+              </div>
+            </p-scrollPanel>
+
+            <div class="flex items-center justify-end mt-4">
+              <!-- <p-button [rounded]="true" [text]="true">
+                <img src="assets/icon/icon-left.svg" alt="">
+              </p-button> -->
+              <p-button [rounded]="true" [text]="true" (onClick)="prevQuestion()" [disabled]="selectedQuestion === 0">
+                <img src="assets/icon/icon-left.svg" alt="">
+              </p-button>
+              <p-button [rounded]="true" [text]="true" (onClick)="setSolved(pinned)" [disabled]="isSolveLoading">
+                <img src="assets/icon/icon-check.svg" alt="">
+              </p-button>
+              <p-button [rounded]="true" [text]="true" (onClick)="nextQuestion()" [disabled]="selectedQuestion === listPinned.length - 1">
+                <img src="assets/icon/icon-right.svg" alt="">
+              </p-button>
+              <!-- <p-button [rounded]="true" [text]="true">
+                <img src="assets/icon/icon-right-grey.svg" alt="">
+              </p-button> -->
+            </div>
+          }
+        } @empty {
+          <div class="flex items-center gap-5 mb-3 min-h-[66px]"></div>
+          <p-scrollPanel [style]="{ width: '100%', height: '312px' }" styleClass="custom-scrollpanel live min-h-[312px]">
+            <div class="flex items-center justify-center text-center">
+              <h2 class="italic font-normal !text-[#DDDDDD]">No Question</h2>
+            </div>
+          </p-scrollPanel>
+
+          <div class="flex items-center justify-end mt-4">
+            <p-button [rounded]="true" [text]="true" (onClick)="prevQuestion()" [disabled]="selectedQuestion === 0 || listPinned.length == 0">
+              <img src="assets/icon/icon-left.svg" alt="">
+            </p-button>
+            <p-button [rounded]="true" [text]="true" [disabled]="listPinned.length == 0">
+              <img src="assets/icon/icon-check.svg" alt="">
+            </p-button>
+            <p-button [rounded]="true" [text]="true" (onClick)="nextQuestion()" [disabled]="selectedQuestion === listPinned.length - 1 || listPinned.length == 0">
+              <img src="assets/icon/icon-right.svg" alt="">
+            </p-button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

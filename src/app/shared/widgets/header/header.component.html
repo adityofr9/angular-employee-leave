@@ -1,0 +1,21 @@
+<div class="block lg:flex lg:justify-between items-center mb-3">
+  <h2 class="mb-3 lg:mb-0">{{ title }}</h2>
+
+  <div class="flex flex-col lg:flex-row gap-3">
+    <ng-container *ngIf="hasSearch">
+      <!-- MARK: Search component -->
+      <app-header-search [items]="listItems" [labels]="labelSearch" (searchEvent)="searchedData($event)" (selectEvent)="selectData($event)" (clearEvent)="clearSearch()"></app-header-search>
+    </ng-container>
+    <ng-container *ngIf="hasFilter">
+      <!-- MARK: Filter component -->
+      <app-header-filter [fields]="filterFields" (onFilter)="filterData($event)"></app-header-filter>
+    </ng-container>
+
+    <ng-container *ngIf="hasActionBtn">
+      <!-- MARK: Action Button component -->
+      <app-header-button-action [actions]="actionButtons" (onAction)="runAction($event)"></app-header-button-action>
+    </ng-container>
+  </div>
+</div>
+
+<app-breadcrumb></app-breadcrumb>

@@ -1,0 +1,474 @@
+<div class="flex flex-col h-full minh-custom">
+  <app-header
+    [title]="'Quiz'"
+    [hasSearch]="true"
+    [listItems]="listSearch"
+    [labelSearch]="'question'"
+    (onSearch)="searchData($event)"
+    (onSelect)="navigateSelected($event)"
+    (onClearSearch)="searchData($event)"
+    [hasFilter]="false"
+    [hasActionBtn]="true"
+    [actionButtons]="buttonActions"
+    (onAction)="runActionBtn($event)"
+  ></app-header>
+
+  <div class="flex justify-between items-center mb-3">
+    <p class="mb-0 text-[24px] font-bold">{{ boothName }}</p>
+    <a href="javascript:;" class="text-base text-[indigo]" (click)="downloadTemplate()">
+      <i class="pi pi-download font-semibold"></i>
+      <span class="underline ml-2 font-semibold">Download Template Here</span>
+    </a>
+  </div>
+
+  <form [formGroup]="forms">
+    <div [formArrayName]="'items'">
+      <p-table
+        [value]="listQuiz"
+        [columns]="listQuiz"
+        [rows]="paginator.limit"
+        [first]="0"
+        [scrollable]="true"
+        scrollHeight="70vh"
+        [reorderableColumns]="true"
+        [showCurrentPageReport]="true"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        styleClass="p-datatable-striped"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        dataKey="id"
+        [expandedRowKeys]="expandedRows"
+        (onRowReorder)="onRowReorder($event)"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="min-width: 100px">
+              Status
+            </th>
+            <th style="min-width: 100px">
+              ID
+            </th>
+            <th style="min-width: 300px">
+              Question
+            </th>
+            <th style="min-width: 300px">
+              Answer
+            </th>
+            <th>Action</th>
+            <!-- <th style="width:3rem"></th> -->
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-quiz let-expanded="expanded" let-index="rowIndex">
+          @if (!quiz?.answer && !!quiz?.id) {
+            <tr
+              [ngClass]="
+                {
+                  '!bg-[#FFE9EA]': !quiz?.answer && !!quiz?.id,
+                  'font-semibold': expanded
+                }
+              "
+            >
+              <td>
+                <p-inputSwitch
+                  [(ngModel)]="quiz.status"
+                  [ngModelOptions]="{ standalone: true }"
+                  (ngModelChange)="onStatusChange($event, quiz, index)"
+                  [disabled]="!quiz.id"
+                />
+              </td>
+              <td class="select-none">
+                  {{ ((paginator.page - 1) * paginator.limit) + (index + 1) }}
+              </td>
+              <td class="select-none">
+                <span class="line-clamp-1">
+                  {{ quiz.labelQuestion ?? quiz.question }}
+                </span>
+              </td>
+              <td class="select-none">
+                <span class="flex items-center gap-2 line-clamp-1" [ngClass]="{ 'text-danger font-semibold': !quiz?.answer && !!quiz?.id }">
+                  @if (quiz?.answer) {
+                    {{ quiz?.labelAnswer ?? quiz?.answer }}
+                  } @else {
+                    @if (quiz.id) {
+                      Answer has not been selected
+                      <img src="assets/icon/icon-alert.svg" alt="" />
+                      <!-- MARK: info mark -->
+                    }
+                  }
+                </span>
+              </td>
+              <td class="flex items-center" >
+                <div
+                  class="btn border-0 shadow-none cursor-pointer text-[#D12114] hover:bg-[rgba(229,231,235,0.3)]"
+                  (click)="onDelete(index, quiz)"
+                >
+                  <i class="pi pi-trash"></i>
+                </div>
+                <span class="bg-[#D9D9D9] w-[2px] h-6 rounded-sm ml-2"></span>
+                <button
+                  type="button"
+                  pButton
+                  pRipple
+                  [pRowToggler]="quiz"
+                  class="p-button-text p-button-rounded p-button-plain text-[indigo] shadow-none h-12 w-12"
+                  [icon]="expanded ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+                ></button>
+              </td>
+            </tr>
+          } @else {
+            @if (listSearch?.length > 0) {
+              <tr
+                [ngClass]="
+                  {
+                    '!bg-[#FFE9EA]': !quiz?.answer && !!quiz?.id,
+                    'font-semibold': expanded
+                  }
+                "
+              >
+                <td>
+                  <p-inputSwitch
+                    [(ngModel)]="quiz.status"
+                    [ngModelOptions]="{ standalone: true }"
+                    (ngModelChange)="onStatusChange($event, quiz, index)"
+                    [disabled]="!quiz.id"
+                  />
+                </td>
+                <td class="select-none">
+                    {{ ((paginator.page - 1) * paginator.limit) + (index + 1) }}
+                </td>
+                <td class="select-none">
+                  <span class="line-clamp-1">
+                    {{ quiz.labelQuestion ?? quiz.question }}
+                  </span>
+                </td>
+                <td class="select-none">
+                  <span class="flex items-center gap-2 line-clamp-1" [ngClass]="{ 'text-danger font-semibold': !quiz?.answer && !!quiz?.id }">
+                    @if (quiz?.answer) {
+                      {{ quiz?.labelAnswer ?? quiz?.answer }}
+                    } @else {
+                      @if (quiz.id) {
+                        Answer has not been selected
+                        <img src="assets/icon/icon-alert.svg" alt="" />
+                        <!-- MARK: info mark -->
+                      }
+                    }
+                  </span>
+                </td>
+                <td class="flex items-center">
+                  <div
+                    class="btn border-0 shadow-none cursor-pointer text-[#D12114] hover:bg-[rgba(229,231,235,0.3)]"
+                    (click)="onDelete(index, quiz)"
+                  >
+                    <i class="pi pi-trash"></i>
+                  </div>
+                  <span class="bg-[#D9D9D9] w-[2px] h-6 rounded-sm ml-2"></span>
+                  <button
+                    type="button"
+                    pButton
+                    pRipple
+                    [pRowToggler]="quiz"
+                    class="p-button-text p-button-rounded p-button-plain text-[indigo] shadow-none h-12 w-12"
+                    [icon]="expanded ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+                  ></button>
+                </td>
+              </tr>
+            } @else {
+              <tr
+                [ngClass]="
+                  {
+                    '!bg-[#FFE9EA]': !quiz?.answer && !!quiz?.id,
+                    'font-semibold': expanded
+                  }
+                "
+                [pReorderableRow]="index"
+              >
+                <td pReorderableRowHandle>
+                  <p-inputSwitch
+                    [(ngModel)]="quiz.status"
+                    [ngModelOptions]="{ standalone: true }"
+                    (ngModelChange)="onStatusChange($event, quiz, index)"
+                    [disabled]="!quiz.id"
+                  />
+                </td>
+                <td pReorderableRowHandle class="select-none">
+                    {{ ((paginator.page - 1) * paginator.limit) + (index + 1) }}
+                </td>
+                <td pReorderableRowHandle class="select-none">
+                  <span class="line-clamp-1">
+                    {{ quiz.labelQuestion ?? quiz.question }}
+                  </span>
+                </td>
+                <td pReorderableRowHandle class="select-none">
+                  <span class="flex items-center gap-2 line-clamp-1" [ngClass]="{ 'text-danger font-semibold': !quiz?.answer && !!quiz?.id }">
+                    @if (quiz?.answer) {
+                      {{ quiz?.labelAnswer ?? quiz?.answer }}
+                    } @else {
+                      @if (quiz.id) {
+                        Answer has not been selected
+                        <img src="assets/icon/icon-alert.svg" alt="" />
+                        <!-- MARK: info mark -->
+                      }
+                    }
+                  </span>
+                </td>
+                <td class="flex items-center" pReorderableRowHandle>
+                  <div
+                    class="btn border-0 shadow-none cursor-pointer text-[#D12114] hover:bg-[rgba(229,231,235,0.3)]"
+                    (click)="onDelete(index, quiz)"
+                  >
+                    <i class="pi pi-trash"></i>
+                  </div>
+                  <span class="bg-[#D9D9D9] w-[2px] h-6 rounded-sm ml-2"></span>
+                  <button
+                    type="button"
+                    pButton
+                    pRipple
+                    [pRowToggler]="quiz"
+                    class="p-button-text p-button-rounded p-button-plain text-[indigo] shadow-none h-12 w-12"
+                    [icon]="expanded ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+                  ></button>
+                </td>
+              </tr>
+            }
+          }
+        </ng-template>
+        <ng-template pTemplate="rowexpansion" let-quiz let-idx="rowIndex">
+          <tr>
+            <td colspan="12">
+              <!-- MARK: Edit Mode -->
+              @if (quiz.isEdit) {
+                <!-- {{idx}} -->
+                <div [formGroupName]="idx">
+                  <!-- MARK: Question & Answer -->
+                  <div class="grid grid-cols-2 gap-5 mb-5">
+                    <div class="block">
+                      <p-floatLabel class="question">
+                        <!-- <input pInputText [formControlName]="'question'" [ngClass]="{ 'is-invalid': showErrorFormControl(idx, 'question') }"/> -->
+                        <textarea
+                          rows="2"
+                          cols="30"
+                          maxlength="150"
+                          pInputTextarea
+                          [formControlName]="'question'"
+                          [ngClass]="{ 'is-invalid': showErrorFormControl(idx, 'question') }"
+                          [autoResize]="true"
+                          class="resize-y"
+                        ></textarea>
+                        <label for="name">Question</label>
+                      </p-floatLabel>
+                      <alert-error-input [label]="'Question'" [control]="getFormControl(idx, 'question')"></alert-error-input>
+                    </div>
+
+                    <div
+                      class="flex flex-col px-2 border-2 border-solid border-[#F9F9F9] rounded-lg py-3 h-[97%]"
+                    >
+                      <p class="text-xs text-[indigo] font-bold mb-1">Answer</p>
+                      <div class="flex items-center gap-2 text-lg leading-[normal]" [ngClass]="{ 'text-danger font-semibold': (!getAnswer(idx) && !!quiz.id) || isNoAnswer.includes(idx) }">
+                        @if (getAnswer(idx)) {
+                          {{ getAnswer(idx) }}
+                        } @else {
+                            @if (quiz.id || isNoAnswer.includes(idx)) {
+                            Answer has not been selected
+                            <img src="assets/icon/icon-alert.svg" alt="" />
+                            <!-- MARK: info mark -->
+                          } @else {
+                            -
+                          }
+                        }
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- MARK: Option -->
+                  <p class="text-lg leading-[normal] px-2 mb-3">Options</p>
+                  <div
+                    class="grid grid-cols-2 gap-x-7 mb-4"
+                    [style.gridTemplateRows]="'repeat(' + getRow(optionsArr(idx).controls.length, true) + ', minmax(0, 1fr))'"
+                    style="grid-auto-flow: column"
+                    [formArrayName]="'options'"
+                  >
+                    <ng-container *ngFor="let opt of optionsArr(idx).controls; let i = index">
+                      <div class="form-group custom-inputIconQuiz">
+                        <div class="flex gap-1">
+                          <p-iconField iconPosition="right" class="w-full">
+                            <p-inputIcon>
+                              <p-toggleButton
+                                [ngModel]="getAnswer(idx) == opt.value && getAnswer(idx) !== '' ? true : false"
+                                [ngModelOptions]="{standalone: true}"
+                                class=""
+                                [disabled]="opt.value === ''"
+                                [onIcon]="'pi pi-check'"
+                                [offIcon]="'pi pi-check'"
+                                iconPos="right"
+                                styleClass="bg-transparent"
+                                (onChange)="onSelectAnswer(idx, opt, $event)"
+                              />
+                            </p-inputIcon>
+                            <p-floatLabel>
+                              <!-- <input
+                                pInputText
+                                maxlength="100"
+                                [formControlName]="i"
+                                (ngModelChange)="onChangeOpt($event, idx, i)"
+                                [ngClass]="{ 'is-invalid': showErrorOption(idx, i) }"/> -->
+                                <textarea
+                                  rows="2"
+                                  cols="30"
+                                  maxlength="100"
+                                  pInputTextarea
+                                  [formControlName]="i"
+                                  (ngModelChange)="onChangeOpt($event, idx, i)"
+                                  [ngClass]="{ 'is-invalid': showErrorOption(idx, i) }"
+                                  [autoResize]="true"
+                                  class="resize-y pr-12"
+                                ></textarea>
+                              <label for="option">Option {{i + 1}}</label>
+                            </p-floatLabel>
+                          </p-iconField>
+                          <p-button
+                            icon="pi pi-times"
+                            class="hCustom"
+                            [text]="true"
+                            severity="danger"
+                            (click)="removeOption(idx, i, opt)"
+                            [disabled]="(i + 1) <= 2 && optionsArr(idx).controls.length <= 2"
+                          />
+                        </div>
+                        <alert-error-input [label]="'Option ' + (i + 1)" [control]="optionFC(idx, i)"></alert-error-input>
+                      </div>
+                    </ng-container>
+                    @if (optionsArr(idx).controls.length < 5) {
+                      <div class="form-group custom-inputIcon flex gap-1">
+                        <p-button
+                          label="Add options"
+                          icon="pi pi-plus"
+                          class="w-full hCustom"
+                          styleClass="h-full w-full border-dashed border-2 border-solid border-[#DDDDDD] bg-white active:bg-[#DDDDDD] text-start text-[#919191]"
+                          [text]="true"
+                          severity="primary"
+                          (click)="addOptions(idx)"
+                        ></p-button>
+                        <p-button
+                          class="invisible"
+                          icon="pi pi-times"
+                        />
+                      </div>
+                    } @else {
+                      <div class="form-group">
+                        <p class="text-[#919191] font-normal px-3 text-[14px]">Maximum number of options reached</p>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="flex justify-end gap-8 mt-5">
+                    <button pButton pRipple label="Cancel" type="button" rounded="true" outlined="true" class="primary" (click)="quiz.isEdit = false; resetQuestion(idx)"></button>
+                    <button pButton pRipple label="Save" type="submit" rounded="true" class="primary" (click)="onSubmit(idx, quiz.id)"></button>
+                    <!-- [disabled]="isLoading || this.questionsFC.controls[idx].invalid" -->
+                  </div>
+                </div>
+
+              } @else {
+                <div class="grid grid-cols-2 gap-5 mb-5">
+                  <div
+                    class="flex flex-col px-2 border-2 border-solid border-[#F9F9F9] rounded-lg py-3"
+                  >
+                    <p class="text-xs text-[indigo] font-bold mb-1">Question</p>
+                    <p class="text-lg leading-[normal] mb-0" [innerHTML]="quiz?.question || '-'"></p>
+                  </div>
+
+                  <div
+                    class="flex flex-col px-2 border-2 border-solid border-[#F9F9F9] rounded-lg py-3"
+                  >
+                    <p class="text-xs text-[indigo] font-bold mb-1">Answer</p>
+                    <div class="flex items-center gap-2 text-lg leading-[normal]" [ngClass]="{ 'text-danger font-semibold': !quiz?.answer && !!quiz?.id }">
+                      @if (quiz?.answer) {
+                        {{ quiz?.answer }}
+                      } @else {
+                        @if (quiz.id) {
+                          Answer has not been selected
+                          <img src="assets/icon/icon-alert.svg" alt="" />
+                          <!-- MARK: info mark -->
+                        } @else {
+                          -
+                        }
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <!-- MARK: Form -->
+                <p class="text-lg leading-[normal] px-2 mb-3">Options</p>
+                <div
+                  class="grid grid-cols-2 gap-5 mb-4"
+                  [style.gridTemplateRows]="'repeat(' + getRow(quiz?.options?.length, false) + ', minmax(0, 1fr))'"
+                  style="grid-auto-flow: column"
+                >
+                  @for (opt of quiz?.options; track $index) {
+                    <div
+                      class="flex flex-col px-2 border-2 border-solid border-[#F9F9F9] rounded-lg py-3"
+                    >
+                      <p class="text-xs text-[indigo] font-bold mb-1">Option {{ $index + 1 }}</p>
+                      <p class="text-lg leading-[normal] mb-0" [innerHTML]="opt"></p>
+                    </div>
+                  }
+                  <!-- <div
+                    class="flex flex-col px-2 border-2 border-solid border-[#F9F9F9] rounded-lg py-3"
+                  >
+                    <p class="text-xs text-[indigo] font-bold mb-1">Option 2</p>
+                    <p class="text-lg leading-[normal] mb-0">
+                      Memorandum
+                    </p>
+                  </div>
+                  <div
+                    class="flex flex-col px-2 border-2 border-solid border-[#F9F9F9] rounded-lg py-3"
+                  >
+                    <p class="text-xs text-[indigo] font-bold mb-1">Option 3</p>
+                    <p class="text-lg leading-[normal] mb-0">
+                      Memorandum
+                    </p>
+                  </div>
+                  <div
+                    class="flex flex-col px-2 border-2 border-solid border-[#F9F9F9] rounded-lg py-3"
+                  >
+                    <p class="text-xs text-[indigo] font-bold mb-1">Option 4</p>
+                    <p class="text-lg leading-[normal] mb-0">
+                      Memorandum
+                    </p>
+                  </div>
+                  <div
+                    class="flex flex-col px-2 border-2 border-solid border-[#F9F9F9] rounded-lg py-3"
+                  >
+                    <p class="text-xs text-[indigo] font-bold mb-1">Option 5</p>
+                    <p class="text-lg leading-[normal] mb-0">
+                      Memorandum
+                    </p>
+                  </div> -->
+                </div>
+
+                <div class="flex justify-end gap-8 mt-5">
+                  <button pButton pRipple label="Edit" type="button" rounded="true" class="primary" (click)="quiz.isEdit = true"></button>
+                </div>
+              }
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="12" class="text-center">
+              <p class="!text-[#919191] italic m-0">No question data</p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </form>
+
+  <app-paginator-bottom
+    *ngIf="paginator"
+    [data]="paginator"
+    [showPaginator]="true"
+    (onValueChange)="pagination($event)"
+    [customOpt]="[15, 30, 50, 100]"
+    class="mt-auto"
+  ></app-paginator-bottom>
+</div>

@@ -1,0 +1,77 @@
+<form [formGroup]="forms" (ngSubmit)="onSubmit()">
+  <div class="p-4 lg:p-10">
+    <div class="mb-10 flex items-center">
+      <p class="text-xl lg:text-[28px] mb-0 font-bold">{{ titlePopup() }}</p>
+      <div class="ml-auto">
+        <i class="cursor-pointer pi pi-times font-bold text-lg lg:text-2xl" (click)="onClose()"></i>
+      </div>
+    </div>
+
+    <div class="mb-10">
+      <div class="form-group">
+        <p-floatLabel>
+          <input
+            pInputText
+            formControlName="title"
+            [ngClass]="{ 'is-invalid': showErrorFormControl('title') }"
+            maxlength="255"
+          />
+          <label for="name">Title *</label>
+        </p-floatLabel>
+        <alert-error-input
+          [control]="getFormControl('title')"
+          [label]="'Title'"
+        ></alert-error-input>
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <textarea
+            pInputTextarea
+            id="desc"
+            rows="4" cols="30"
+            maxlength="999"
+            formControlName="description"
+            [ngClass]="{ 'is-invalid': showErrorFormControl('description') }"
+            class="resize-y min-h-28"
+          ></textarea>
+          <label for="desc">Description</label>
+        </p-floatLabel>
+        <alert-error-input
+          [control]="getFormControl('description')"
+          [label]="'Description'"
+        ></alert-error-input>
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <p-calendar
+            inputId="duedate"
+            dateFormat="yy/mm/dd"
+            formControlName="dueDate"
+            [showIcon]="true"
+            [showClear]="true"
+            [iconDisplay]="'input'"
+            [ngClass]="{ 'is-invalid': showErrorFormControl('dueDate') }"
+          ></p-calendar>
+          <label for="accountIds">End date (yyyy/mm/dd) *</label>
+        </p-floatLabel>
+        <alert-error-input
+          [control]="getFormControl('dueDate')"
+          [label]="'Description'"
+        ></alert-error-input>
+      </div>
+    </div>
+
+    <div class="flex justify-end">
+      <button
+        pButton
+        pRipple
+        label="Save"
+        type="submit"
+        rounded="true"
+        class="primary hover:bg-blue-700"
+      ></button>
+    </div>
+  </div>
+</form>

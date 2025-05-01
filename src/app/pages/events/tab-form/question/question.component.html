@@ -1,0 +1,398 @@
+<div class="flex flex-col h-full minh-custom">
+  <app-header
+    [title]="'Question'"
+    [hasSearch]="true"
+    [listItems]="listSearch"
+    [labelSearch]="'title'"
+    (onSearch)="searchData($event)"
+    (onSelect)="navigateSelected($event)"
+    (onClearSearch)="searchData($event)"
+    [hasFilter]="false"
+    [hasActionBtn]="true"
+    [actionButtons]="buttonActions"
+    (onAction)="runActionBtn($event)"
+  ></app-header>
+
+  <form [formGroup]="forms">
+    <div [formArrayName]="'items'">
+      <p-table
+        [value]="listQuestion"
+        [columns]="listQuestion"
+        [rows]="paginator.limit"
+        [first]="0"
+        [scrollable]="true"
+        [reorderableColumns]="true"
+        [showCurrentPageReport]="true"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        [expandedRowKeys]="expandedRows"
+        scrollHeight="70vh"
+        styleClass="p-datatable-striped"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        dataKey="id"
+        (onRowReorder)="onRowReorder($event)"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width:3rem"></th>
+            <th style="min-width: 100px">
+              Title
+            </th>
+            <th style="min-width: 100px">
+              Helper
+            </th>
+            <th style="min-width: 100px">
+              Answer Type
+            </th>
+            <th>Action</th>
+            <!-- <th style="width:3rem"></th> -->
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-question let-expanded="expanded" let-index="rowIndex">
+          @if (listSearch?.length > 0) {
+            <tr>
+              <td class="select-none">
+                <!-- {{ question.orderList ? question.orderList + '.' : '' }} -->
+                  {{ ((paginator.page - 1) * paginator.limit) + (index + 1) + '.' }}
+              </td>
+              <td>
+                <span class="line-clamp-1 select-none">
+                  {{ question.labelQuestion ?? question.title }}
+                </span>
+              </td>
+              <td>
+                <span class="line-clamp-1 select-none">
+                  {{ question.labelHelper ?? question.helper }}
+                </span>
+              </td>
+              <td>
+                <span class="line-clamp-1 select-none">
+                  {{ question.labelAnswerType ?? question.answerType }}
+                </span>
+              </td>
+              <td class="flex items-center">
+                <div
+                  class="btn border-0 shadow-none cursor-pointer text-[#D12114] hover:bg-[rgba(229,231,235,0.3)]"
+                  (click)="onDelete(index, question)"
+                >
+                  <i class="pi pi-trash"></i>
+                </div>
+                <span class="bg-[#D9D9D9] w-[2px] h-6 rounded-sm ml-2"></span>
+                <button
+                  type="button"
+                  pButton
+                  pRipple
+                  [pRowToggler]="question"
+                  class="p-button-text p-button-rounded p-button-plain text-[indigo] shadow-none h-12 w-12"
+                  [icon]="expanded ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+                  (click)="onExpandRow(question, index, expanded)"
+                ></button>
+              </td>
+              <!-- <td class="group">
+                  <span>
+                    <img src="assets/icon/icon-drag.svg" alt="">
+                  </span>
+              </td> -->
+            </tr>
+          } @else {
+            <tr
+              [pReorderableRow]="index">
+              <td pReorderableRowHandle class="select-none">
+                <!-- {{ question.orderList ? question.orderList + '.' : '' }} -->
+                  {{ ((paginator.page - 1) * paginator.limit) + (index + 1) + '.' }}
+              </td>
+              <td pReorderableRowHandle>
+                <span class="line-clamp-1 select-none">
+                  {{ question.labelQuestion ?? question.title }}
+                </span>
+              </td>
+              <td pReorderableRowHandle>
+                <span class="line-clamp-1 select-none">
+                  {{ question.labelHelper ?? question.helper }}
+                </span>
+              </td>
+              <td pReorderableRowHandle>
+                <span class="line-clamp-1 select-none">
+                  {{ question.labelAnswerType ?? question.answerType }}
+                </span>
+              </td>
+              <td class="flex items-center" pReorderableRowHandle>
+                <div
+                  class="btn border-0 shadow-none cursor-pointer text-[#D12114] hover:bg-[rgba(229,231,235,0.3)]"
+                  (click)="onDelete(index, question)"
+                >
+                  <i class="pi pi-trash"></i>
+                </div>
+                <span class="bg-[#D9D9D9] w-[2px] h-6 rounded-sm ml-2"></span>
+                <button
+                  type="button"
+                  pButton
+                  pRipple
+                  [pRowToggler]="question"
+                  class="p-button-text p-button-rounded p-button-plain text-[indigo] shadow-none h-12 w-12"
+                  [icon]="expanded ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+                  (click)="onExpandRow(question, index, expanded)"
+                ></button>
+              </td>
+              <!-- <td class="group" pReorderableRowHandle>
+                  <span>
+                    <img src="assets/icon/icon-drag.svg" alt="">
+                  </span>
+              </td> -->
+            </tr>
+          }
+        </ng-template>
+        <ng-template pTemplate="rowexpansion" let-question let-idx="rowIndex">
+          <tr>
+            <td colspan="12">
+              <!-- MARK: Edit Mode -->
+              @if (question.isEdit) {
+                <!-- {{idx}} -->
+                <div [formGroupName]="idx">
+                  <div class="grid grid-cols-2 gap-5 mb-5">
+                    <!-- MARK: TITLE -->
+                    <div class="form-group">
+                      <p-floatLabel class="question full">
+                        <!-- <input pInputText [formControlName]="'question'" [ngClass]="{ 'is-invalid': showErrorFormControl(idx, 'question') }"/> -->
+                        <textarea
+                          rows="2"
+                          cols="30"
+                          maxlength="255"
+                          pInputTextarea
+                          [formControlName]="'title'"
+                          [ngClass]="{ 'is-invalid': showErrorFormControl(idx, 'title') }"
+                          [autoResize]="true"
+                          class="resize-y"
+                        ></textarea>
+                        <label for="name">Title*</label>
+                      </p-floatLabel>
+                      <alert-error-input [label]="'Title'" [control]="getFormControl(idx, 'title')"></alert-error-input>
+                    </div>
+
+                    <!-- MARK: HELPER -->
+                    <div class="form-group">
+                      <p-floatLabel class="question full">
+                        <textarea
+                          rows="2"
+                          cols="30"
+                          maxlength="255"
+                          pInputTextarea
+                          [formControlName]="'helper'"
+                          [ngClass]="{ 'is-invalid': showErrorFormControl(idx, 'helper') }"
+                          [autoResize]="true"
+                          class="resize-y"
+                        ></textarea>
+                        <label for="name">Helper</label>
+                      </p-floatLabel>
+                      <alert-error-input [label]="'helper'" [control]="getFormControl(idx, 'helper')"></alert-error-input>
+                    </div>
+
+                    <!-- MARK: ANSWER TYPE -->
+                    <div class="form-group">
+                      <p-floatLabel class="question">
+                        <p-dropdown
+                          [options]="answerTypes"
+                          optionLabel="name"
+                          optionValue="value"
+                          formControlName="answerType"
+                          [showClear]="false"
+                          [ngClass]="{ 'is-invalid': showErrorFormControl(idx, 'answerType') }"
+                          (onChange)="onChangeAnswerType($event, idx)"
+                          class="dropdown-blue"
+                        />
+                        <label for="cin">Answer Type*</label>
+                      </p-floatLabel>
+                      <alert-error-input [label]="'Answer Type'" [control]="getFormControl(idx, 'answerType')"></alert-error-input>
+                    </div>
+                  </div>
+
+
+                  <!-- MARK: Option -->
+                  @if (getFormControl(idx, 'options')) {
+                    <p class="text-lg leading-[normal] px-2 mb-3">Options</p>
+                    <div
+                      class="grid grid-cols-2 gap-x-7 mb-4"
+                      [style.gridTemplateRows]="'repeat(' + getRow(optionsArr(idx).controls.length, true) + ', minmax(0, 1fr))'"
+                      style="grid-auto-flow: column"
+                      [formArrayName]="'options'"
+                    >
+                      <ng-container *ngFor="let opt of optionsArr(idx).controls; let i = index">
+                        <div class="form-group custom-inputIconQuiz">
+                          <div class="flex gap-1">
+                            <p-iconField iconPosition="right" class="w-full">
+                              <p-floatLabel>
+                                <!-- <input
+                                  pInputText
+                                  maxlength="100"
+                                  [formControlName]="i"
+                                  (ngModelChange)="onChangeOpt($event, idx, i)"
+                                  [ngClass]="{ 'is-invalid': showErrorOption(idx, i) }"/> -->
+                                  <textarea
+                                    rows="2"
+                                    cols="30"
+                                    maxlength="100"
+                                    pInputTextarea
+                                    [formControlName]="i"
+                                    (ngModelChange)="onChangeOpt($event, idx, i)"
+                                    (focus)="checkOpts(idx)"
+                                    [ngClass]="{ 'is-invalid': showErrorOption(idx, i) }"
+                                    [autoResize]="true"
+                                    class="resize-y"
+                                  ></textarea>
+                                <label for="option">Option {{i + 1}}</label>
+                              </p-floatLabel>
+                            </p-iconField>
+                            <p-button
+                              icon="pi pi-times"
+                              class="hCustom"
+                              [text]="true"
+                              severity="danger"
+                              (click)="removeOption(idx, i, opt)"
+                              [disabled]="(i + 1) <= 2 && optionsArr(idx).controls.length <= 2"
+                            />
+                          </div>
+                          <alert-error-input [label]="'Option ' + (i + 1)" [control]="optionFC(idx, i)"></alert-error-input>
+                        </div>
+                      </ng-container>
+                      @if (optionsArr(idx).controls.length < 50) {
+                        <div class="form-group custom-inputIcon flex gap-1">
+                          <p-button
+                            label="Add options"
+                            icon="pi pi-plus"
+                            class="w-full hCustom"
+                            styleClass="h-full w-full border-dashed border-2 border-solid border-[#DDDDDD] bg-white active:bg-[#DDDDDD] text-start text-[#919191]"
+                            [text]="true"
+                            severity="primary"
+                            (click)="addOptions(idx)"
+                          ></p-button>
+                          <p-button
+                            class="invisible"
+                            icon="pi pi-times"
+                          />
+                        </div>
+                      } @else {
+                        <div class="form-group">
+                          <p class="text-[#919191] font-normal px-3 text-[14px]">Maximum number of options reached</p>
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  <p class="text-lg leading-[normal] px-2 mb-3">Media</p>
+                  <div class="pr-11">
+                    <div class="form-group custom-inputIcon">
+                      <p-floatLabel>
+                        <input pInputText readonly="true" class="disabled:!bg-transparent" formControlName="fileName" />
+                        <label for="fileName">Image File</label>
+                      </p-floatLabel>
+                    </div>
+                    <file-upload
+                      #fileUploadMedia
+                      (onValueChange)="onAddFile($event, idx)"
+                      [accept_file]="'.jpg,.jpeg,.png'"
+                      [allowedImageTypes]="['image/jpg', 'image/jpeg', 'image/png']"
+                      [type_file]="'image'"
+                      [maxSizeImage]="25"
+                      [maxFiles]="1"
+                      [showImage]="true"
+                      [multiple]="false"
+                      [message]="'Maximum size 25 MB. Supports JPEG or PNG only.'"
+                      [isCrop]="false"
+                      [mediaList]="question.media ? [question.media] : []"
+                    ></file-upload>
+                  </div>
+
+                  <div class="flex justify-end gap-8 mt-5 pr-11">
+                    <button pButton pRipple label="Cancel" type="button" rounded="true" outlined="true" class="primary" (click)="question.isEdit = false; resetQuestion(idx)"></button>
+                    <button pButton pRipple label="Save" type="submit" rounded="true" class="primary" (click)="onSubmit(idx, question.id)"></button>
+                    <!-- [disabled]="isLoading || this.questionsFC.controls[idx].invalid" -->
+                  </div>
+                </div>
+
+              } @else {
+                <div class="pr-11">
+                  <div class="grid grid-cols-2 gap-5 mb-5">
+                    <div
+                      class="flex flex-col px-2 border-2 border-solid border-[#F9F9F9] rounded-lg py-3"
+                    >
+                      <p class="text-xs text-[indigo] font-bold mb-1">Title</p>
+                      <p class="text-lg leading-[normal] mb-0" [innerHTML]="question?.title || '-'"></p>
+                    </div>
+
+                    <div
+                      class="flex flex-col px-2 border-2 border-solid border-[#F9F9F9] rounded-lg py-3"
+                    >
+                      <p class="text-xs text-[indigo] font-bold mb-1">Helper</p>
+                      <p class="text-lg leading-[normal] mb-0" [innerHTML]="question?.helper || '-'"></p>
+                    </div>
+
+                    <div
+                      class="flex flex-col px-2 border-2 border-solid border-[#F9F9F9] rounded-lg py-3"
+                    >
+                      <p class="text-xs text-[indigo] font-bold mb-1">Answer Type</p>
+                      <p class="text-lg leading-[normal] mb-0" [innerHTML]="( question?.labelAnswerType ?? question?.answerType) || '-'"></p>
+                    </div>
+                  </div>
+
+                  @if (
+                    question?.options?.length > 0
+                    && (
+                      question?.answerType == 'dropdown'
+                      || question?.answerType == 'radio'
+                      || question?.answerType == 'checkbox'
+                      )
+                  ) {
+                    <!-- MARK: Form -->
+                    <p class="text-lg leading-[normal] px-2 mb-3">Options</p>
+                    <div
+                      class="grid grid-cols-2 gap-5 mb-4"
+                      [style.gridTemplateRows]="'repeat(' + getRow(question?.options?.length, false) + ', minmax(0, 1fr))'"
+                      style="grid-auto-flow: column"
+                    >
+                      @for (opt of question?.options; track $index) {
+                        <div
+                          class="flex flex-col px-2 border-2 border-solid border-[#F9F9F9] rounded-lg py-3"
+                        >
+                          <p class="text-xs text-[indigo] font-bold mb-1">Option {{ $index + 1 }}</p>
+                          <p class="text-lg leading-[normal] mb-0" [innerHTML]="opt"></p>
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  <p class="text-lg leading-[normal] px-2 mb-3">Media</p>
+                  <div
+                    class="flex flex-col px-2 border-2 border-solid border-[#F9F9F9] rounded-lg py-3"
+                  >
+                    <p class="text-xs text-[indigo] font-bold mb-1">Image File</p>
+                    <p class="text-lg leading-[normal] mb-0" [innerHTML]="question?.media?.name || '-'"></p>
+                  </div>
+
+                  <div class="flex justify-end gap-8 mt-5">
+                    <button pButton pRipple label="Edit" type="button" rounded="true" class="primary" (click)="question.isEdit = true"></button>
+                  </div>
+                </div>
+              }
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="12" class="text-center">
+              <p class="!text-[#919191] italic m-0">No question data</p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </form>
+
+  <app-paginator-bottom
+    *ngIf="paginator"
+    [data]="paginator"
+    [showPaginator]="true"
+    (onValueChange)="pagination($event)"
+    [customOpt]="[15, 30, 50, 100]"
+    class="mt-auto"
+  ></app-paginator-bottom>
+</div>

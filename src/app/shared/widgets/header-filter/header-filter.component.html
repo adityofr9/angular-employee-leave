@@ -1,0 +1,31 @@
+<form [formGroup]="forms">
+  <div class="flex flex-col lg:flex-row gap-3">
+    @for (field of fields; track $index) {
+      @switch (field.type) {
+        @case ('date') {
+          <div class="flex-1">
+            <p-calendar
+              #calendar
+              inputId="icondisplay{{field.slug}}"
+              [formControlName]="field.slug"
+              [iconDisplay]="'input'"
+              [showIcon]="true"
+              [readonlyInput]="true"
+              dateFormat="M dd, yy"
+              [placeholder]="field.placeholder"
+              [minDate]="field.options?.minDate"
+              [maxDate]="field.options?.maxDate"
+              showClear="true"
+              (ngModelChange)="onChangeDateRange($event,field.slug, calendar)" />
+          </div>
+
+          @if (showHypen && field.slug !== 'endDate') {
+            <h1 class="my-auto !text-[#919191] hidden lg:block">-</h1>
+          }
+        }
+        @default {
+        }
+      }
+    }
+  </div>
+</form>

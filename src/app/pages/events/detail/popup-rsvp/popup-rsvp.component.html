@@ -1,0 +1,108 @@
+<div class="p-4 lg:p-10 pb-0 flex items-center">
+  <p class="text-xl lg:text-[28px] mb-0 font-bold">{{mode === 'create' ? 'Create' : 'Edit'}} RSVP</p>
+  <div class="ml-auto">
+    <i class="cursor-pointer pi pi-times font-bold text-lg lg:text-2xl" (click)="onClose()"></i>
+  </div>
+</div>
+<div class="p-4 lg:p-10 overflow-y-auto max-h-[570px]">
+  <form [formGroup]="forms" (ngSubmit)="onSubmit()">
+    <div class="mb-10">
+      <div class="form-group">
+        <!-- <ng-select
+          [items]="listAssign"
+          [multiple]="false"
+          [closeOnSelect]="false"
+          [searchable]="true"
+          [hideSelected]="true"
+          bindLabel="name"
+          bindValue="id"
+          placeholder="Name *"
+          class="custom-multiselect p-float-label"
+          [maxSelectedItems]="3"
+          formControlName="cin"
+          [ngClass]="{ 'is-invalid': showErrorFormControl('cin') }"
+        >
+          <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+            @for (item of items; track item) {
+            <div class="ng-value">
+              <span class="ng-value-label">{{ rename(item?.name) }}</span>
+              <span
+                class="ng-value-icon right"
+                (click)="clear(item)"
+                aria-hidden="true"
+                >×</span
+              >
+            </div>
+            }
+          </ng-template>
+        </ng-select> -->
+
+        <p-floatLabel>
+          <p-dropdown
+            [options]="listAssign"
+            optionLabel="name"
+            optionValue="cin"
+            formControlName="cin"
+            [showClear]="true"
+            [ngClass]="{ 'is-invalid': showErrorFormControl('cin') }"
+            [filter]="true"
+            filterBy="name"
+          />
+          <label for="cin">Name *</label>
+        </p-floatLabel>
+        <alert-error-input [label]="'Name'" [control]="getFormControl('cin')"></alert-error-input>
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <p-dropdown
+            [options]="levelAccess"
+            optionLabel="name"
+            optionValue="value"
+            formControlName="accessLevel"
+            [showClear]="true"
+            [ngClass]="{ 'is-invalid': showErrorFormControl('accessLevel') }"
+          />
+          <label for="access">Access Level</label>
+        </p-floatLabel>
+        <alert-error-input [label]="'Access Level'" [control]="getFormControl('accessLevel')"></alert-error-input>
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <input pInputText formControlName="seatPosition" maxlength="25" [ngClass]="{ 'is-invalid': showErrorFormControl('seatPosition') }" />
+          <label for="seatPosition">Position</label>
+        </p-floatLabel>
+        <alert-error-input [label]="'Position'" [control]="getFormControl('Position')"></alert-error-input>
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <input pInputText formControlName="zone" maxlength="25" [ngClass]="{ 'is-invalid': showErrorFormControl('zone') }" />
+          <label for="zone">Zone</label>
+        </p-floatLabel>
+        <alert-error-input [label]="'Zone'" [control]="getFormControl('zone')"></alert-error-input>
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <input pInputText pKeyFilter="num" formControlName="points" [ngClass]="{ 'is-invalid': showErrorFormControl('points') }" />
+          <label for="points">Points *</label>
+        </p-floatLabel>
+        <alert-error-input [label]="'Points'" [control]="getFormControl('points')"></alert-error-input>
+      </div>
+    </div>
+
+    <div class="flex justify-end mb-10">
+      <button
+        pButton
+        pRipple
+        label="Save"
+        type="submit"
+        rounded="true"
+        class="primary hover:bg-blue-700"
+      ></button>
+      <!-- [disabled]="forms.invalid || isLoading" -->
+    </div>
+  </form>
+</div>

@@ -1,0 +1,96 @@
+<app-header [title]="data?.name ?? 'Detail Form'" [hasFilter]="true" [hasActionBtn]="false"></app-header>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5 text-base">
+  <div class="grid grid-cols-1 gap-8">
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center justify-between">
+        <h3>Basic Info</h3>
+        <div class="flex">
+          <p-button pTooltip="Edit Form" [text]="true"  (click)="onEdit()">
+            <img src="assets/icon/edit.svg" alt="icon" class="w-7 h-7" />
+          </p-button>
+        </div>
+      </div>
+      <div class="panel custom-panel h-full">
+        <div class="grid grid-cols-1">
+          <div class="form-group">
+            <p class="mb-2">Title</p>
+            <p class="font-bold text-[24px] mb-4 truncate">{{ data?.title ?? 'Nama Form' }}</p>
+          </div>
+
+          <div class="form-group !mb-8">
+            <p class="mb-0 font-bold">Description</p>
+            <p-scrollPanel [style]="{ width: '100%', height: '96px' }" styleClass="custom-scrollpanel small">
+              <div class="text-justify mb-0" [innerHTML]="data?.description"></div>
+            </p-scrollPanel>
+          </div>
+
+          <div class="form-group !mb-0">
+            <p class="mb-0">Due Date</p>
+            <p class="font-bold mb-0">{{ data?.dueDate | date:'MMM dd, yyyy' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col gap-3">
+      <h3>Question</h3>
+      <div class="panel custom-panel h-full">
+        <div class="grid grid-cols-1">
+          @for (question of data?.questions | slice:0:4; track $index) {
+            <div class="p-3">
+              <span class="font-bold">{{ question }}</span>
+            </div>
+          } @empty {
+            <div class="flex justify-center items-center col-span-3">
+              <p class="text-center !text-[#DDD] italic text-sm">No data available</p>
+            </div>
+          }
+          <div class="flex justify-center p-3">
+            <a routerLink="question" routerLinkActive="true" class="text-[indigo] font-semibold underline">View Details</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-3">
+    <div class="flex items-center justify-between">
+      <h3>Recent Responses</h3>
+      <div class="flex items-center">
+        <p class="text-xs italic mb-0 p-2">Last updated {{ (dateSyncResponses | date:'HH:mm') ?? "--:--" }}</p>
+        <p-button pTooltip="Sync" [text]="true" (click)="getResponses(true)" [disabled]="isSyncResponses">
+          <img src="assets/icon/sync.svg" alt="icon" class="w-7 h-7" [class.pi-spin]="isSyncResponses" />
+        </p-button>
+        <p-button pTooltip="Download Recent Responses" [text]="true" (click)="exportResponses()" [disabled]="isLoadingExpRes">
+          <img src="assets/icon/download.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+      </div>
+    </div>
+    <div class="panel custom-panel h-full">
+      <p-scrollPanel [style]="{ width: '100%', height: '75vh' }" styleClass="custom-scrollpanel">
+        @for (response of listResponses; track $index) {
+          <div class="flex items-center gap-6 py-3">
+            @if (response.profileUrl) {
+              <p-avatar [image]="response?.profileUrl" size="large" shape="circle" class="flex"/>
+            } @else {
+              <div class="rounded-full flex items-center justify-center bg-[#CCD4E9] w-12 h-12">
+                <div class="font-bold text-sm text-black">{{ response?.initial }}</div>
+              </div>
+            }
+            <!-- <img [src]="response?.profileUrl" alt="" class="h-12 w-12 rounded-full"> -->
+            <!-- <p-avatar [image]="response?.profileUrl" size="large" shape="circle" class="flex"/> -->
+            <div class="block">
+              <p class="font-bold mb-1 line-clamp-1">{{ response?.labelTitle ?? response?.title }}</p>
+              <p class="text-xs mb-0">{{ response?.responseDate }}</p>
+              <!-- <p class="text-xs mb-0">{{ response?.attendanceDate | date:'MMM dd, yyyy HH:mm' }}</p> -->
+            </div>
+          </div>
+        } @empty {
+          <div class="flex justify-center items-center col-span-3">
+            <p class="text-center !text-[#DDD] italic text-sm">No data available</p>
+          </div>
+        }
+      </p-scrollPanel>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,81 @@
+.custom-timepicker {
+  position: relative;
+  display: inline-block;
+  color: #4b5563 !important;
+  width: 100%;
+}
+
+.time-input {
+  padding-right: 30px;
+  /* Ruang untuk ikon */
+  width: 100%;
+  height: calc(3.5rem + 2px);
+  line-height: 1.25;
+  border: 2px solid #DDD;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.time-icon {
+  font-size: 20px;
+  color: indigo;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+/* Untuk Chrome, Edge, dan Safari */
+.time-input::-webkit-calendar-picker-indicator {
+  opacity: 0;
+}
+
+/* Untuk Firefox */
+.time-input::-moz-focus-inner {
+  opacity: 0;
+}
+
+/* Untuk Microsoft Edge (versi lama) */
+.time-input::-ms-clear {
+  opacity: 0;
+}
+
+input[type="time"]::-webkit-datetime-edit-fields-wrapper {
+  opacity: 0;
+}
+
+input[type="time"].filled::-webkit-datetime-edit-fields-wrapper {
+  opacity: 1 !important;
+}
+
+input[type="time"] {
+  font-family: "BCA Sans" !important;
+  font-size: 1rem;
+  color: #4b5563;
+
+  &:focus~label,
+  &.filled~label {
+    top: 1.25rem;
+    color: indigo;
+    font-size: 12px;
+  }
+
+  &:focus,
+  &.filled {
+    padding-top: 1.625rem;
+    padding-bottom: .625rem;
+  }
+
+  &:focus {
+    border: 2px solid indigo !important;
+  }
+
+  &.\!border-none:focus {
+    border: none !important;
+  }
+
+  &::placeholder {
+    color: #919191 !important;
+  }
+}

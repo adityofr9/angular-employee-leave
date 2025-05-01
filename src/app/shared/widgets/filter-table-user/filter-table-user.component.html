@@ -1,0 +1,69 @@
+<div class="mb-4">
+  <form [formGroup]="forms">
+    <div class="flex gap-3">
+      <ng-container *ngFor="let field of fields; let i = index">
+        <ng-container [ngSwitch]="field.type">
+
+          <!-- Input Tipe Date -->
+          <div *ngSwitchCase="'date'" class="flex-1">
+            <p class="mb-2 text-[#4D5562]">{{ field.name }}</p>
+
+            <p-calendar #calendar [formControlName]="field.slug" [iconDisplay]="'input'" [showIcon]="true"
+              inputId="icondisplay" selectionMode="range" [readonlyInput]="true" dateFormat="dd/mm/yy"
+              [placeholder]="field.placeholder" (ngModelChange)="onChangeDateRange($event,field.slug,calendar)" />
+          </div>
+
+          <!-- Input Tipe Date with Shadow -->
+          <div *ngSwitchCase="'date-shadow'" class="flex-1">
+            <p class="mb-2 text-[#4D5562]">{{ field.name }}</p>
+
+            <p-calendar class="w-shadow" #calendar [formControlName]="field.slug" [iconDisplay]="'input'"
+              [showIcon]="true" inputId="icondisplay" selectionMode="range" [readonlyInput]="true" dateFormat="dd/mm/yy"
+              [placeholder]="field.placeholder"
+              (ngModelChange)="onChangeDateRange($event,field.slug,calendar, field?.multi ? field.multi : false)" />
+          </div>
+
+          <!-- Input Tipe Date RANGE -->
+          <div *ngSwitchCase="'date-range'" class="flex-1">
+            <p class="mb-2 text-[#4D5562]" [innerHTML]="field.name"></p>
+
+            <p-calendar class="nonshadow" #calendar [formControlName]="field.slug" [iconDisplay]="'input'"
+              [showIcon]="true" inputId="icondisplay" selectionMode="range" [readonlyInput]="true" dateFormat="dd/mm/yy"
+              [placeholder]="field.placeholder" (ngModelChange)="onChangeNewRange($event,field.slug,calendar)" />
+          </div>
+
+          <!-- Input Tipe Select With Shadow -->
+          <div *ngSwitchCase="'selected'" class="flex-1" [ngClass]="{'nonshadow': !shadow}">
+            <p class="mb-2 text-[#4D5562]">{{ field.name }}</p>
+            <p-dropdown class="filter-dropdown" [formControlName]="field.slug" [options]="field.options"
+              optionLabel="name" [showClear]="true" [filter]="field.filter ?? false" [filterBy]="field.filterKey ?? ''"
+              [placeholder]="field.placeholder" (onChange)="onChangeSelected($event,field.slug)" />
+          </div>
+
+          <!-- Input Tipe Select Non Shadow -->
+          <div *ngSwitchCase="'selected-nonshadow'" class="flex-1">
+            <p class="mb-2 text-[#4D5562]">{{ field.name }}</p>
+            <p-dropdown [formControlName]="field.slug" [options]="field.options" optionLabel="name" [showClear]="true"
+              [filter]="field.filter ?? false" [filterBy]="field.filterKey ?? ''" [placeholder]="field.placeholder"
+              (onChange)="onChangeSelected($event,field.slug)" />
+          </div>
+
+
+          <div *ngSwitchCase="'search'" class="flex-1">
+            <p class="mb-2 text-[#4D5562]">{{ field.name }}</p>
+            <input type="text" class="form-control search w-full" [formControlName]="field.slug" [placeholder]="field.placeholder"
+              (ngModelChange)="onSearch($event, field.slug)" />
+          </div>
+
+
+          <!-- Add other types as needed -->
+        </ng-container>
+      </ng-container>
+
+      <button *ngIf="isConfirmed" class="btn btn-primary mt-auto cursor-pointer" (click)="onSubmit()">Submit</button>
+      <button *ngIf="isClear" class="btn btn-danger mt-auto cursor-pointer" (click)="onClear()">
+        <i class="pi pi-trash"></i>&nbsp; Filtered
+      </button>
+    </div>
+  </form>
+</div>

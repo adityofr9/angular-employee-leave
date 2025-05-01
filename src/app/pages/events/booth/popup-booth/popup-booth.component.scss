@@ -1,0 +1,13 @@
+.p-togglebutton {
+  &.p-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1023px) {
+  ::ng-deep .custom-scrollpanel {
+    &.p-scrollpanel {
+      height: 50dvh !important;
+    }
+  }
+}

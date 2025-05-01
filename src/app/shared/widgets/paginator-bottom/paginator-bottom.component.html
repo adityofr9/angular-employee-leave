@@ -1,0 +1,15 @@
+<div class="w-full flex items-center">
+  <button *ngIf="urlBack" pButton pRipple label="Cancel" [routerLink]="urlBack"
+      class="shadow-none mr-2 bg-transparent border h-[36px] text-[#4D5562]"></button>
+  <div class="flex-1">
+
+      <p-paginator *ngIf="!isNoOption" (onPageChange)="onPageChange($event)" [first]="first" [rows]="data.limit"
+          [totalRecords]="data.totalPage" [showCurrentPageReport]="true" [showFirstLastIcon]="true"
+          currentPageReportTemplate="{first} - {last} of {totalRecords} entries" [rowsPerPageOptions]="options" />
+
+      <p-paginator *ngIf="isNoOption" (onPageChange)="onPageChange($event)" [first]="first" [rows]="data.limit"
+          [totalRecords]="data.totalPage" [showCurrentPageReport]="true" [showFirstLastIcon]="true"
+          currentPageReportTemplate="{first} - {last} of {totalRecords} entries" />
+
+  </div>
+</div>

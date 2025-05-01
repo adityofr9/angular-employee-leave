@@ -1,0 +1,49 @@
+<form [formGroup]="forms" (ngSubmit)="onSubmit()">
+  <div class="p-4 lg:p-10">
+    <div class="mb-10 flex items-center">
+      <p class="text-xl lg:text-[28px] font-bold mb-0">Edit Menu</p>
+      <div class="ml-auto">
+        <i class="cursor-pointer pi pi-times text-lg lg:text-2xl" (click)="onClose()"></i>
+      </div>
+    </div>
+
+    <div class="mb-10">
+      <div class="form-group">
+        <p-floatLabel>
+          <input pInputText formControlName="name" [ngClass]="{ 'is-invalid': showErrorFormControl('name') || (isExistError) }" maxlength="100" (ngModelChange)="isExistError = false" />
+          <label for="name">Name *</label>
+        </p-floatLabel>
+        <alert-error-input [control]="getFormControl('name')" [label]="'Booth Name'"></alert-error-input>
+        <div><small class="text-red-500" *ngIf="isExistError">Menu name already exist.</small></div>
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <input pInputText formControlName="imageName" readonly="true" class="disabled:!bg-transparent" />
+          <label for="imageName">Icon menu</label>
+        </p-floatLabel>
+      </div>
+      <file-upload
+        (onValueChange)="onAddFile($event)"
+        [accept_file]="'.jpg,.jpeg,.png'"
+        [allowedImageTypes]="['image/jpg', 'image/jpeg', 'image/png']"
+        [type_file]="'image'"
+        [maxSizeImage]="25"
+        [showImage]="true"
+        [message]="'Maximum size 25 MB with aspect ratio 1:1 (square). Supports JPEG or PNG only.'"
+        [mediaList]="iconMedia"
+      ></file-upload>
+    </div>
+
+    <div class="flex justify-content-end gap-2">
+      <button
+        pButton
+        pRipple
+        label="Save"
+        type="submit"
+        class="shadow-none mt-auto ml-auto !px-12 cursor-pointer bg-[indigo] hover:bg-blue-700 text-white rounded-full"
+      ></button>
+      <!-- [disabled]="forms.invalid || isLoading" -->
+    </div>
+  </div>
+</form>

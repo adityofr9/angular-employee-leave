@@ -1,0 +1,8 @@
+.dynamic-border {
+  &:has(.p-scrollpanel-bar.p-scrollpanel-bar-y.p-scrollpanel-hidden),
+  :has(.p-scrollpanel-bar.p-scrollpanel-bar-y.p-scrollpanel-hidden) {
+      border: hidden !important;
+  }
+  border : 2px solid #F9F9F9;
+}
+

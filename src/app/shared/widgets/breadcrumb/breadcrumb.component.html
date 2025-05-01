@@ -1,0 +1,28 @@
+<!-- <p-breadcrumb class="max-w-full" [model]="items" /> -->
+
+<ng-container *ngIf="items.length > 0">
+  <p-breadcrumb class="max-w-full" [model]="items">
+    <ng-template pTemplate="item" let-item>
+      <ng-container *ngIf="item.route != ''; else elseBlock">
+        <a
+          *ngIf="!['Edit'].includes(item.label); else elseBlock"
+          [routerLink]="item.route"
+          class="p-menuitem-link active"
+        >
+          <span [ngClass]="[item.icon ? item.icon : '', 'text-[#919191] font-semibold']"></span>
+          <span class="text-[#919191] font-semibold capitalize truncate max-w-60">{{
+            removeQuery(item.label)
+          }}</span>
+        </a>
+      </ng-container>
+
+      <ng-template #elseBlock>
+        <span
+          class="text-[#919191] capitalize truncate max-w-60 font-semibold"
+        >
+          {{ removeQuery(item.label) }}
+        </span>
+      </ng-template>
+    </ng-template>
+  </p-breadcrumb>
+</ng-container>

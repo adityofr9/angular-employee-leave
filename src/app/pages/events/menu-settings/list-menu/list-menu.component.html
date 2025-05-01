@@ -1,0 +1,87 @@
+<!-- <app-header
+  [hasFilter]="false"
+  [hasActionBtn]="true"
+  [actionButtons]="buttonActions"
+></app-header> -->
+<div class="flex justify-end">
+  <button class="bg-[indigo] hover:bg-blue-700 text-white font-bold py-3 px-10 rounded-full text-[18px] inline-flex items-center cursor-pointer" (click)="addNew()">
+    <i class="pi pi-plus me-3"></i> Add
+  </button>
+</div>
+
+
+<div class="mt-8">
+  <p-table
+    #dt
+    [columns]="list"
+    [rows]="paginator.limit"
+    [first]="0"
+    [exportHeader]="'customExportHeader'"
+    [value]="list"
+    dataKey="id"
+    [scrollable]="true"
+    styleClass="p-datatable-striped"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+    <ng-template pTemplate="header" class="bg-[#fff]">
+      <tr>
+        <th pSortableColumn="index" class="w-[10%] lg:w-auto">
+          ID
+          <p-sortIcon field="index" />
+        </th>
+        <th pSortableColumn="name">
+          Menu
+          <p-sortIcon field="name" />
+        </th>
+        <th pSortableColumn="path">
+          Path
+          <p-sortIcon field="path" />
+        </th>
+        <th style="width: 100px" alignFrozen="right" pFrozenColumn>
+          Action
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-menu>
+      <tr>
+        <td>{{ menu?.index }}</td>
+        <td>{{ menu?.menuName }}</td>
+        <td>{{ menu?.path }}</td>
+        <td class="action-list" alignFrozen="right" pFrozenColumn>
+          <div class="flex items-center">
+            <div
+              class="btn border-0 shadow-none cursor-pointer"
+              (click)="addNew(menu)"
+            >
+              <img src="assets/icon/icon-edit.svg" alt="" class="w-6">
+            </div>
+            <div
+              class="btn border-0 shadow-none cursor-pointer text-[#D12114]"
+              (click)="onDelete(menu)"
+            >
+              <i class="pi pi-trash text-[23px]"></i>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="12" class="text-center">
+          <p class="!text-[#919191] italic m-0">No results found</p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-paginator-bottom
+    *ngIf="paginator"
+    [data]="paginator"
+    (onValueChange)="pagination($event)"
+    [showPaginator]="true"
+    [customOpt]="[15, 30, 50, 100]"
+    ></app-paginator-bottom>
+</div>

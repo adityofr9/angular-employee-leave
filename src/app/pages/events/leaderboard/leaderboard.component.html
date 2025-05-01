@@ -1,0 +1,69 @@
+<div class="flex flex-col h-full minh-custom">
+  <app-header
+    [title]="'Leaderboard'"
+    [hasFilter]="false"
+  ></app-header>
+
+  <p-table
+    #dt
+    [columns]="list"
+    [rows]="paginator.limit"
+    [first]="0"
+    [exportHeader]="'customExportHeader'"
+    [value]="list"
+    dataKey="id"
+    [scrollable]="true"
+    styleClass="p-datatable-striped"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+    <ng-template pTemplate="header" class="bg-[#fff]">
+      <tr>
+        <th pSortableColumn="no"></th>
+        <th pSortableColumn="name">
+          Name
+          <p-sortIcon field="name" />
+        </th>
+        <th pSortableColumn="nip">
+          NIP
+          <p-sortIcon field="nip" />
+        </th>
+        <th pSortableColumn="point">
+          Point
+          <p-sortIcon field="point" />
+        </th>
+        <th pSortableColumn="Leaderboard">
+          Leaderboard Point
+          <p-sortIcon field="Leaderboard" />
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-user let-index="rowIndex">
+      <tr>
+        <td>{{ index + 1 }}</td>
+        <td>{{ user?.name }}</td>
+        <td>{{ user?.cin }}</td>
+        <td>{{ user?.point }}</td>
+        <td>{{ user?.leaderboardPoint }}</td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="12" class="text-center">
+          <p class="!text-[#919191] italic m-0">No results found</p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-paginator-bottom
+    *ngIf="paginator"
+    [data]="paginator"
+    [showPaginator]="true"
+    [customOpt]="[15, 30, 50, 100]"
+    class="mt-auto"
+  ></app-paginator-bottom>
+
+</div>

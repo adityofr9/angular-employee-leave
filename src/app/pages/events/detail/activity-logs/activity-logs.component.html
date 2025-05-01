@@ -1,0 +1,119 @@
+<app-header
+  [title]="'Activity Logs'"
+  [hasFilter]="false"
+  [hasActionBtn]="true"
+  [actionButtons]="buttonActions"
+  (onAction)="runActionBtn($event)"
+></app-header>
+  <!-- (onAction)="runActionBtn($event)" -->
+
+  <!-- @if (!isCollapseFilter) {
+    <p-panel [collapsed]="isCollapseFilter">
+      <h4 class="mb-2">Filters:</h4>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="form-group">
+          <p-floatLabel>
+            <p-calendar
+              inputId="filterrange"
+              [(ngModel)]="rangeDates"
+              selectionMode="range"
+              dateFormat="M dd, yy"
+              showClear="true"
+              (ngModelChange)="onDateSelect($event)"
+              [readonlyInput]="true" />
+            <label for="filterrange">Start Date - End Date</label>
+          </p-floatLabel>
+        </div>
+
+        <div class="form-group">
+          <p-floatLabel>
+            <p-dropdown
+              [options]="actionList"
+              [(ngModel)]="actionValue"
+              [showClear]="true"
+              optionLabel="label"
+              optionValue="value"
+              [placeholder]="'Select Action'"
+              (onChange)="onActionSelect($event)"
+            ></p-dropdown>
+            <label for="action">Action</label>
+          </p-floatLabel>
+        </div>
+      </div>
+    </p-panel>
+  } -->
+
+<app-table-filter
+  [actionsList]="actionList"
+  [sourcesList]="sourceList"
+  [usersList]="userList"
+  (filterEvent)="filter($event)"
+></app-table-filter>
+
+<p-table
+  #dt
+  [columns]="list"
+  [rows]="paginator.limit"
+  [first]="0"
+  [exportHeader]="'customExportHeader'"
+  [value]="list"
+  dataKey="id"
+  [scrollable]="true"
+  styleClass="p-datatable-striped"
+  [tableStyle]="{ 'min-width': '50rem' }"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+  (onSort)="onSort($event)"
+  sortField="createdAt"
+  [sortOrder]="-1">
+  <ng-template pTemplate="header" class="bg-[#fff]">
+    <tr>
+      <th pSortableColumn="createdAt">
+        Date & Time
+        <p-sortIcon field="createdAt" />
+      </th>
+      <th pSortableColumn="user">
+        User
+        <p-sortIcon field="user" />
+      </th>
+      <th pSortableColumn="nip">
+        NIP
+        <p-sortIcon field="nip" />
+      </th>
+      <th pSortableColumn="action">
+        Action
+        <p-sortIcon field="action" />
+      </th>
+      <th pSortableColumn="source">
+        Source
+        <p-sortIcon field="source" />
+      </th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-activityLog>
+    <tr>
+      <td>{{ activityLog?.dateTime }}</td>
+      <td>{{ activityLog?.labelUser }}</td>
+      <td>{{ activityLog?.nip }}</td>
+      <td>{{ activityLog?.action }}</td>
+      <td>{{ activityLog?.source }}</td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="12" class="text-center">
+        <p class="!text-[#919191] italic m-0">No results found</p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<app-paginator-bottom
+  *ngIf="paginator"
+  [data]="paginator"
+  (onValueChange)="pagination($event)"
+  [showPaginator]="true"
+  [customOpt]="[15, 30, 50, 100]"
+  ></app-paginator-bottom>

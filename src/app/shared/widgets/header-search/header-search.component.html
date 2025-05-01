@@ -1,0 +1,16 @@
+<div class="autocomplete-container">
+  <i class="pi pi-search autocomplete-icon"></i>
+  <p-autoComplete
+    #autoComplete
+    [(ngModel)]="selectedItem"
+    [suggestions]="filteredItems"
+    [showClear]="true"
+    (completeMethod)="search($event)"
+    (onSelect)="onSelect($event)"
+    (onBlur)="onBlur()"
+    (onClear)="onClear()"
+    (onFocus)="selectedItem && autoComplete.show()"
+    [optionLabel]="labels ?? 'name'"
+    placeholder="Search...">
+  </p-autoComplete>
+</div>

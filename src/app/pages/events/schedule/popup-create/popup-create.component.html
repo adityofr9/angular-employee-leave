@@ -1,0 +1,241 @@
+<div class="p-4 lg:p-10 flex items-center">
+  <p class="text-xl lg:text-[28px] mb-0 font-bold">{{ titlePopup() }}</p>
+  <div class="ml-auto">
+    <i class="cursor-pointer pi pi-times font-bold text-lg lg:text-2xl" (click)="onClose()"></i>
+  </div>
+</div>
+<div class="p-4 lg:p-10 pt-0 overflow-y-auto max-h-[570px]">
+  <form [formGroup]="forms" (ngSubmit)="onSubmit()">
+    <div class="grid grid-cols-1 gap-4 mb-2">
+      <div class="form-group">
+        <p-floatLabel>
+          <input
+            pInputText
+            formControlName="title"
+            maxlength="255"
+            [ngClass]="{ 'is-invalid': showErrorFormControl('title') }"
+          />
+          <label for="title">Title *</label>
+        </p-floatLabel>
+        <alert-error-input
+          [label]="'Title'"
+          [control]="getFormControl('title')"
+        ></alert-error-input>
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <p-calendar
+            inputId="date"
+            formControlName="date"
+            dateFormat="yy/mm/dd"
+            [showIcon]="true"
+            [showClear]="true"
+            [iconDisplay]="'input'"
+            [touchUI]="true"
+            [maxDate]="eventEnd"
+            [minDate]="eventStart"
+            [ngClass]="{ 'is-invalid': showErrorFormControl('date') || isOutDate }"
+            (onFocus)="resetErr()"
+          ></p-calendar>
+          <label for="date">Date *</label>
+        </p-floatLabel>
+        <alert-error-input
+          [control]="getFormControl('date')"
+          [label]="'Date'"
+        ></alert-error-input>
+        <div><small class="text-red-500" *ngIf="isOutDate">Date is out of range</small></div>
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <p-calendar
+            inputId="startTime"
+            formControlName="startTime"
+            [iconDisplay]="'input'"
+            [showIcon]="true"
+            [timeOnly]="true"
+            [readonlyInput]="false"
+            [ngClass]="{ 'is-invalid': showErrorFormControl('startTime') || isOutDate }"
+            [maxDate]="getFormControl('endTime').value ?? ''"
+            (onBlur)="onBlur($event, 'start')"
+            (onShow)="onShow($event, 'startTime')"
+          >
+            <ng-template pTemplate="inputicon" let-clickCallBack="clickCallBack">
+              <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
+            </ng-template>
+            <ng-template pTemplate="incrementicon">
+              <i class="pi pi-sort-up-fill"></i>
+            </ng-template>
+            <ng-template pTemplate="decrementicon">
+              <i class="pi pi-sort-down-fill"></i>
+            </ng-template>
+          </p-calendar>
+
+          <!-- <input
+            #timepickStart
+            type="time"
+            placeholder="Pilih Jam"
+            formControlName="startTime"
+            (onBlur)="onBlur($event, 'start')"
+            required="true"
+            class="time-input"
+            [ngClass]="{ 'is-invalid': showErrorFormControl('startTime') }"
+            [class.filled]="!!getFormControl('startTime').value"
+            (click)="timepickStart.showPicker()"/>
+          <i class="pi pi-clock time-icon" (click)="timepickStart.showPicker()"></i> -->
+          <label for="startTime">Start Time *</label>
+        </p-floatLabel>
+        <alert-error-input
+          [control]="getFormControl('startTime')"
+          [label]="'Start Time'"
+        ></alert-error-input>
+        <div><small class="text-red-500" *ngIf="isOutDate">Date is out of range</small></div>
+        @if (isConflict.start) {
+          <div><small class="text-[#FF9430]">Start Time has a scheduling conflict with other event.</small></div>
+        }
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <p-calendar
+            inputId="endTime"
+            formControlName="endTime"
+            [iconDisplay]="'input'"
+            [showIcon]="true"
+            [timeOnly]="true"
+            [readonlyInput]="false"
+            [ngClass]="{ 'is-invalid': showErrorFormControl('endTime') || isOutDate }"
+            [minDate]="getFormControl('startTime').value ?? ''"
+            (onBlur)="onBlur($event, 'end')"
+            (onShow)="onShow($event, 'endTime')"
+          >
+            <ng-template pTemplate="inputicon" let-clickCallBack="clickCallBack">
+              <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
+            </ng-template>
+            <ng-template pTemplate="incrementicon">
+              <i class="pi pi-sort-up-fill"></i>
+            </ng-template>
+            <ng-template pTemplate="decrementicon">
+              <i class="pi pi-sort-down-fill"></i>
+            </ng-template>
+          </p-calendar>
+
+
+          <!-- <input
+            #timepickEnd
+            type="time"
+            placeholder="Pilih Jam"
+            formControlName="endTime"
+            (onBlur)="onBlur($event, 'end')"
+            required="true"
+            class="time-input"
+            [ngClass]="{ 'is-invalid': showErrorFormControl('endTime') }"
+            [class.filled]="!!getFormControl('endTime').value"
+            (click)="timepickEnd.showPicker()"/>
+          <i class="pi pi-clock time-icon" (click)="timepickEnd.showPicker()"></i> -->
+          <label for="endTime">End Time *</label>
+        </p-floatLabel>
+        <alert-error-input
+          [control]="getFormControl('endTime')"
+          [label]="'End Time'"
+        ></alert-error-input>
+        <div><small class="text-red-500" *ngIf="isOutDate">Date is out of range</small></div>
+        @if (isConflict.end) {
+          <div><small class="text-[#FF9430]">End Time has a scheduling conflict with other event.</small></div>
+        }
+      </div>
+
+      <div class="form-group">
+        <p-editor
+          formControlName="information"
+          placeholder="Information"
+          [style]="{ height: '200px' }"
+          class="bottom-toolbar p-float-label"
+          [class.filled]="!!getFormControl('information').value && getFormControl('information').value !== '\<p>\</p>'"
+          [class.is-invalid]="lengthEditor > 255"
+          (onInit)="onEditorInit($event)"
+          (keyup)="count()"
+        >
+          <ng-template pTemplate="header">
+            <span class="ql-formats">
+              <button type="button" class="ql-bold" aria-label="Bold"></button>
+              <button
+                type="button"
+                class="ql-italic"
+                aria-label="Italic"
+              ></button>
+              <button
+                type="button"
+                class="ql-underline"
+                aria-label="Underline"
+              ></button>
+              <button class="ql-list" value="ordered"></button>
+              <button class="ql-list" value="bullet"></button>
+              <button class="ql-script" value="sub"></button>
+            </span>
+          </ng-template>
+        </p-editor>
+        <div>
+          <small class="text-red-500" *ngIf="lengthEditor > 255">
+            Information cannot be more than 255 characters long.
+          </small>
+        </div>
+      </div>
+
+      <div>
+        <div class="form-group">
+          <p-floatLabel>
+            <input pInputText formControlName="imageName" readonly="true" class="disabled:!bg-transparent" />
+            <label for="imageName">Image File</label>
+          </p-floatLabel>
+        </div>
+        <file-upload
+          (onValueChange)="onAddFile($event, 'image')"
+          [accept_file]="'.jpg,.jpeg,.png'"
+          [allowedImageTypes]="['image/jpg', 'image/jpeg', 'image/png']"
+          [type_file]="'image'"
+          [maxSizeImage]="25"
+          [showImage]="true"
+          [isCrop]="true"
+          [ratio]="'1 / 1'"
+          [mediaList]="imagetemp ?? []"
+          [message]="'Maximum size 25 MB with aspect ratio 1:1 (square). Supports JPEG or PNG only.'"
+        ></file-upload>
+      </div>
+
+      <div>
+        <div class="form-group">
+          <p-floatLabel>
+            <input pInputText formControlName="documentsName" readonly="true" class="disabled:!bg-transparent" />
+            <label for="documentsName">Document</label>
+          </p-floatLabel>
+        </div>
+        <file-upload
+          (onValueChange)="onAddFile($event, 'document')"
+          [accept_file]="'.pdf'"
+          [allowedDocumentTypes]="['application/pdf']"
+          [type_file]="'document'"
+          [maxFiles]="10"
+          [maxSizeDocument]="25"
+          [showImage]="true"
+          [multiple]="true"
+          [message]="'Maximum size 25 MB per file (can upload up to 10 files). Supports PDF only.'"
+          [mediaList]="tempDoc"
+        ></file-upload>
+      </div>
+
+    </div>
+
+    <div class="flex justify-content-end gap-2 mb-10">
+      <button
+        pButton
+        pRipple
+        label="Save"
+        type="submit"
+        class="shadow-none mt-auto ml-auto !px-12 cursor-pointer bg-[indigo] hover:bg-blue-700 text-white rounded-full"
+      ></button>
+      <!-- [disabled]="isLoading || !forms.valid" -->
+    </div>
+  </form>
+</div>

@@ -1,0 +1,79 @@
+<div
+  class="bg-img flex h-dvh lg:h-screen items-center justify-center bg-[url('/assets/media/bg-login.jpg')]"
+>
+  <div
+    class="login flex flex-col h-full items-center justify-center py-4 md:py-0"
+  >
+    <img class="mb-7 lg:mb-14 h-[60.66px]" src="assets/icon/logo-default.svg" alt="" />
+    <div class="w-[442px] bg-[#39466175] border-[1.6px] border-[#1a367391] rounded-[20px] py-[25px] px-[35px]">
+      <div class="mb-5 text-center">
+        <h3 class="!text-white font-bold">Login</h3>
+      </div>
+      <!-- Form yang menggunakan Reactive Forms -->
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+        <div class="flex items-start flex-col form-group">
+          <label for="email" class="mb-3 text-[14px] lg:text-[16px] text-white font-normal">Email</label>
+          <input
+            id="email"
+            type="email"
+            class="text-[14px] lg:text-[16px] !rounded-[30px] border border-black w-full p-2"
+            pInputText
+            placeholder="Enter email"
+            formControlName="email"
+          />
+          <small *ngIf="isFieldInvalid('email')" class="p-error pt-1 font-semibold">
+            <!-- Pesan error untuk email -->
+            <span *ngIf="loginForm.get('email')?.errors?.['required']"
+              >Email is required.</span
+            >
+            <span *ngIf="loginForm.get('email')?.errors?.['email']"
+              >Please enter a valid email.</span
+            >
+          </small>
+        </div>
+
+        <div class="flex items-start flex-col form-group !mb-10">
+          <label for="password" class="mb-3 text-[14px] lg:text-[16px] text-white font-normal">Password</label>
+          <div class="relative w-full">
+            <div class="icon-eye">
+              <div
+                (click)="togglePassword()"
+                [ngClass]="isPassword ? 'eye-show' : 'eye-hide'"
+              ></div>
+            </div>
+            <input
+              id="password"
+              [type]="isPassword ? 'text' : 'password'"
+              class="text-[14px] lg:text-[16px] !rounded-[30px] border border-black w-full p-2"
+              pInputText
+              placeholder="Enter password"
+              formControlName="password"
+            />
+          </div>
+          <small *ngIf="isFieldInvalid('password')" class="p-error pt-1">
+            <!-- Pesan error untuk password -->
+            <span *ngIf="loginForm.get('password')?.errors?.['required']"
+              >Password is required.</span
+            >
+            <span *ngIf="loginForm.get('password')?.errors?.['minlength']"
+              >Password must be at least 6 characters long.</span
+            >
+          </small>
+        </div>
+
+        <div class="flex items-center">
+          <button
+            label="Login"
+            pButton
+            pRipple
+            class="primary !rounded-[48px] mx-auto login-btn"
+            [disabled]="isLoading || loginForm.invalid"
+          >
+            <i *ngIf="isLoading" class="pi pi-spin pi-spinner"></i>
+          </button>
+        </div>
+      </form>
+      <!-- </p-card> -->
+    </div>
+  </div>
+</div>

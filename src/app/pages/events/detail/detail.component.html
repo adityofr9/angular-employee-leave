@@ -1,0 +1,183 @@
+<app-header
+  [title]="data?.name ?? 'Detail Event'"
+  [hasFilter]="true"
+  [hasActionBtn]="false"
+></app-header>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+  <div class="flex flex-col gap-3">
+    <div class="flex items-center justify-between">
+      <h3>Details</h3>
+      <div class="flex">
+        <p-button pTooltip="Edit Event"  [text]="true" (onClick)="onEdit()">
+          <img src="assets/icon/edit.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+        <p-button pTooltip="Activity Logs" [text]="true" [routerLink]="'activity-logs'">
+          <img src="assets/icon/logs.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+        <p-button pTooltip="Menu Settings" [text]="true" [routerLink]="'menu-settings'">
+          <img src="assets/icon/settings.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+      </div>
+    </div>
+    <div class="panel custom-panel h-full">
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-group mb-3 col-span-2">
+          <p class="mb-1">Event Name</p>
+          <div class="font-bold text-2xl">{{ data?.name }}</div>
+        </div>
+
+        <div class="form-group">
+          <p class="mb-1">Start Date</p>
+          <p class="font-bold">{{ data?.startedAt | date : "MMM dd, yyyy" }}</p>
+        </div>
+        <div class="form-group">
+          <p class="mb-1">End Date</p>
+          <p class="font-bold">{{ data?.endedAt | date : "MMM dd, yyyy" }}</p>
+        </div>
+
+        <div class="form-group overflow-hidden">
+          <p class="mb-1">Assigned to</p>
+          @if (data?.users) {
+          <p
+            class="font-bold truncate w-full"
+            [class.cursor-pointer]="(data?.users?.length ?? 0) > 1"
+            (mouseenter)="(data?.users?.length ?? 0) > 1 ? op.toggle($event) : null"
+          >
+            @for (admin of data?.users; track $index) {
+              {{ admin?.name }}{{ $index !== data?.users?.length - 1 ? ', ' : '' }}
+            }
+          </p>
+          <p-overlayPanel #op>
+            <p-scrollPanel [style]="{ width: '100%', height: '100px' }">
+              <div class="flex flex-col">
+                <small
+                  *ngFor="let user of data?.users"
+                  class="font-semibold truncate"
+                  >{{ user.name }}</small
+                >
+              </div>
+            </p-scrollPanel>
+          </p-overlayPanel>
+          }
+        </div>
+        <div class="form-group">
+          <p class="mb-1">Access Code</p>
+          <p class="font-bold">{{ data?.accessCode }}</p>
+        </div>
+
+        <div class="form-group mb-3 col-span-2">
+          <p class="mb-0">QR Code</p>
+          <a (click)="downloadQRCode()" class="font-bold text-[indigo] cursor-pointer text-base">Download QR Code</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-3">
+    <div class="flex items-center justify-between">
+      <h3>RSVP</h3>
+      <div class="flex">
+        <p-button pTooltip="Leaderboard" [text]="true" [routerLink]="'leaderboard'">
+          <img src="assets/icon/leaderboard.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+        <p-button pTooltip="Download Template RSVP" tooltipPosition="bottom" [text]="true" (click)="downloadTemplateRSVP()" [disabled]="isLoadingTmpRSVP">
+          <img src="assets/icon/downloadTemplate.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+        <p-button pTooltip="Export RSVP" tooltipPosition="bottom" [text]="true" (click)="exportRSVP()" [disabled]="isLoadingExpRSVP">
+          <img src="assets/icon/download.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+        <p-button pTooltip="Import RSVP" tooltipPosition="bottom" [text]="true" (click)="importRSVP()">
+          <img src="assets/icon/import.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+        <p-button pTooltip="Add RSVP" [text]="true" (click)="addNew()">
+          <img src="assets/icon/plus.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+      </div>
+    </div>
+    <div class="panel custom-panel h-full">
+      <div class="form-group w-full md:w-1/2 !mb-0 px-4">
+        <p-iconField iconPosition="left">
+          <p-inputIcon styleClass="pi pi-search" />
+          <input
+            type="search"
+            pInputText
+            placeholder="Search..."
+            class="!rounded-full search-cancel:contrast-200 search-cancel:cursor-pointer"
+            [formControl]="searchRsvp"
+          />
+        </p-iconField>
+      </div>
+      <div class="block">
+        <p-scrollPanel [style]="{ width: '100%', height: '340px', paddingTop: '1rem' }">
+          @for (rsvp of rsvpList; track $index) {
+            <div class="group flex justify-between hover:bg-[rgba(229,231,235,0.3)] hover:rounded-lg px-4">
+              <div class="flex items-center gap-6 py-3">
+                @if (rsvp.profileUrl) {
+                  <img
+                    [src]="rsvp?.profileUrl"
+                    alt=""
+                    class="w-12 h-12 rounded-full"
+                  />
+                } @else {
+                  <div class="rounded-full flex items-center justify-center bg-[#CCD4E9] w-12 h-12">
+                    <div class="font-bold text-sm text-black">{{ rsvp?.initials }}</div>
+                  </div>
+                }
+                <div class="block">
+                  <p class="font-bold mb-1 capitalize">{{ rsvp?.userName }}</p>
+                  <p class="text-sm mb-0">{{ rsvp?.userCin }}</p>
+                </div>
+              </div>
+              <div class="items-center hidden group-hover:flex">
+                <div
+                  class="btn border-0 shadow-none cursor-pointer"
+                  (click)="editRSVP(rsvp)"
+                >
+                  <img src="assets/icon/icon-edit.svg" alt="" class="w-6">
+                </div>
+                <div
+                  class="btn border-0 shadow-none cursor-pointer text-[#D12114]"
+                  (click)="deleteRSVP(rsvp)"
+                >
+                  <i class="pi pi-trash text-[23px]"></i>
+                </div>
+
+              </div>
+            </div>
+          } @empty {
+            <div class="flex justify-center items-center col-span-3">
+              <p class="text-center !text-[#919191] italic">No RSVP available</p>
+            </div>
+          }
+        </p-scrollPanel>
+      </div>
+    </div>
+  </div>
+
+  <div class="lg:col-span-2">
+    <div class="panel custom-panel h-full pt-0">
+      <p-tabView>
+        <p-tabPanel header="General Info">
+          <general-info [parentId]="id" [main]="mainData" [general]="data?.generalInfo" [media]="data?.media" (generalChange)="getById()"></general-info>
+        </p-tabPanel>
+        <p-tabPanel header="Banner">
+          <banner [idParent]="id"></banner>
+        </p-tabPanel>
+        <p-tabPanel header="Booth">
+          <booth [idParent]="id"></booth>
+        </p-tabPanel>
+        <p-tabPanel header="Form">
+          <tab-form [idParent]="id"></tab-form>
+        </p-tabPanel>
+        <p-tabPanel header="Schedule">
+          <div class="overflow-x-scroll">
+            <p-scrollPanel [style]="{ minWidth: '1000px', width: '100%', height: '100%' }">
+              <schedule [idParent]="id" [eventData]="mainData" [minDate]="minDate" [maxDate]="maxDate"></schedule>
+            </p-scrollPanel>
+          </div>
+        </p-tabPanel>
+      </p-tabView>
+    </div>
+  </div>
+</div>

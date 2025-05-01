@@ -1,0 +1,99 @@
+<header-schedule
+  [eventId]="idParent"
+  [eventData]="eventData"
+  [(view)]="view"
+  [(viewDate)]="viewDate"
+  (formChange)="viewChange($event)"
+  (viewChange)="viewChange($event)"
+  (viewDateChange)="viewChange($event)"
+></header-schedule>
+
+<ng-template #customCellTemplate let-day="day" let-locale="locale">
+  <div class="cal-cell-top">
+    <span class="cal-day-number mb text-[#919191]">{{
+      day.date | calendarDate : "monthViewDayNumber" : locale
+    }}</span>
+  </div>
+  <p-scrollPanel
+    [style]="{ width: '100%', height: '72px' }"
+    styleClass="custom-scrollpanel small"
+  >
+    @for (event of day.events; track $index) {
+    <div
+      class="calendar month {{ day.events.length == 1 && 'h-full' }} {{ event.cssClass }}"
+      (click)="handleEvent($event, event.id)"
+    >
+      <div
+        class="w-full line-clamp-1 {{
+          day.events.length == 1 && '!line-clamp-3'
+        }}"
+      >
+        {{ event.title }}
+      </div>
+    </div>
+    }
+  </p-scrollPanel>
+</ng-template>
+
+<ng-template
+  #customEventTemplate
+  let-viewDate="viewDate"
+  let-weekEvent="weekEvent"
+  let-tooltipPlacement="tooltipPlacement"
+  let-eventClicked="eventClicked"
+  let-tooltipTemplate="tooltipTemplate"
+  let-tooltipAppendToBody="tooltipAppendToBody"
+  let-tooltipDisabled="tooltipDisabled"
+  let-tooltipDelay="tooltipDelay"
+  let-column="column"
+>
+  <div
+    class="calendar day h-full {{ weekEvent?.event?.cssClass }} overflow-hidden overflow-y-auto"
+    (click)="handleEvent($event, weekEvent?.event?.id)"
+  >
+    <div
+      class="w-full"
+    >
+      <span class="!font-normal">{{ weekEvent?.event.start | date: 'HH:mm' }}</span>
+      <br>
+      {{ weekEvent?.event?.title }}
+    </div>
+  </div>
+</ng-template>
+
+@if (minDate && maxDate) {
+<div [ngSwitch]="view">
+  <mwl-calendar-month-view
+    *ngSwitchCase="'month'"
+    [viewDate]="viewDate"
+    [events]="events"
+    [cellTemplate]="customCellTemplate"
+    [refresh]="refresh"
+    [locale]="locale"
+    (beforeViewRender)="beforeMonthViewRender($event)"
+  >
+  </mwl-calendar-month-view>
+  <mwl-calendar-week-view
+    *ngSwitchCase="'week'"
+    [viewDate]="viewDate"
+    [events]="events"
+    [refresh]="refresh"
+    [locale]="locale"
+    [eventTemplate]="customEventTemplate"
+    (beforeViewRender)="beforeWeekViewRender($event)"
+  >
+  </mwl-calendar-week-view>
+  <mwl-calendar-day-view
+    *ngSwitchCase="'day'"
+    [viewDate]="viewDate"
+    [events]="events"
+    [refresh]="refresh"
+    [locale]="locale"
+    [eventTemplate]="customEventTemplate"
+    (beforeViewRender)="beforeDayViewRender($event)"
+  >
+  </mwl-calendar-day-view>
+  <!-- [dayStartHour]="6"
+  [dayEndHour]="15" -->
+</div>
+}

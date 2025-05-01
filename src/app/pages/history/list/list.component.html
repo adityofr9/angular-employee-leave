@@ -1,0 +1,76 @@
+<filter-table-user [fields]="filterFields" (onSubmitFilter)="filtered($event)"></filter-table-user>
+
+<div class="panel custom-table">
+  <div class="flex items-center justify-content-between mb-3">
+    <h4 class="text-[18px] lg:text-[24px]">History</h4>
+    <div class="ml-auto flex items-center">
+      <button pButton pRipple icon="pi pi-refresh"
+        class="shadow-none bg-transparent border text-[#4D5562] h-[36px] w-[40px]" (click)="getData()"></button>
+    </div>
+  </div>
+  <div class="flex justify-end items-center mb-3">
+    <div class="mr-auto flex items-center relative">
+      <p class="m-0">Show</p>
+      <div class="custom-pagination">
+        <p-paginator [rows]="paginator.limit" [first]="0" [totalRecords]="paginator.totalPage"
+          [rowsPerPageOptions]="[10, 20, 50, 100]" (onPageChange)="onPageChange($event)" />
+      </div>
+      <p class="m-0 pl-[10px]">entries</p>
+    </div>
+    <app-search [val]="Query.keyword" (value)="onSearch($event)"></app-search>
+  </div>
+  <p-table #dt [columns]="list"
+    [rows]="paginator.limit"
+    [first]="0"
+    [exportHeader]="'customExportHeader'"
+    [value]="list"
+    [scrollable]="true"
+    dataKey="id"
+    styleClass="rounded-md">
+    <ng-template pTemplate="header" class="bg-[#fff]">
+      <tr>
+        <th pSortableColumn="id" class="flex items-center" style="min-width: 100px">
+          ID
+          <p-sortIcon field="id" />
+        </th>
+        <th style="min-width: 200px">Topic</th>
+        <th style="min-width: 200px">Participant</th>
+        <th style="min-width: 240px">Status</th>
+        <th style="min-width: 200px">Created date</th>
+        <th style="width: 100px" class="action" alignFrozen="right" pFrozenColumn>
+          Action
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-product>
+      <tr>
+        <td>{{ product.index }}</td>
+        <td>{{ product.topic }}</td>
+        <td>{{ product.participant }}</td>
+        <td>{{ product.createdAt | date:'dd / MMM / YYYY HH:mm' }}</td>
+        <td>{{ product.memberCin }}</td>
+        <td>{{ product.memberBankAccount }}</td>
+        <td>{{ product.parentBankAccount }}</td>
+        <td class="action-list" alignFrozen="right" pFrozenColumn>
+          <div class="flex items-center border-1 border-[#E5E7EB] rounded-[8px] badge shadow-none">
+            <div class="btn border-0 shadow-none cursor-pointer text-[#B21CEA] hover:bg-[rgba(229,231,235,0.3)]"
+              [routerLink]="'/u/user-management/pre-registration/'+product.id" routerLinkActive="router-link-active">
+              <i class="pi pi-eye"></i>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="12" class="text-center">
+          <h4>No history data available</h4>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-paginator-bottom [data]="paginator" (onValueChange)="pagination($event)"></app-paginator-bottom>
+</div>

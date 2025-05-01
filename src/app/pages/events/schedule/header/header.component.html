@@ -1,0 +1,56 @@
+<div class="grid grid-cols-6 my-4">
+  <div class="flex items-center gap-3">
+    <div
+      class="btn shadow-transparent cursor-pointer hover:bg-[#f1f5f9] active:bg-[#e2e8f0]"
+      mwlCalendarToday
+      [(viewDate)]="viewDate"
+      (viewDateChange)="viewDateChange.next(viewDate)"
+    >
+      Today
+    </div>
+    <div class="flex">
+      <span
+        class="pi pi-angle-left text-[indigo] text-2xl cursor-pointer"
+        mwlCalendarPreviousView
+        [view]="view"
+        [(viewDate)]="viewDate"
+        (viewDateChange)="viewDateChange.next(viewDate)"
+      ></span>
+      <span
+        class="pi pi-angle-right text-[indigo] text-2xl cursor-pointer"
+        mwlCalendarNextView
+        [view]="view"
+        [(viewDate)]="viewDate"
+        (viewDateChange)="viewDateChange.next(viewDate)"
+      ></span>
+    </div>
+  </div>
+
+  <div class="flex  justify-center items-center col-span-4">
+    <h3 class="text-2xl">{{ viewDate | calendarDate : view + "ViewTitle" : locale }}</h3>
+    <button
+      (click)="calendarOp.toggle($event)"
+      class="pi pi-angle-down text-[indigo] text-2xl bg-transparent cursor-pointer"
+    ></button>
+    <p-overlayPanel #calendarOp styleClass="no-card-overlay">
+      <p-calendar
+        [(ngModel)]="viewDate"
+        [inline]="true"
+        (onSelect)="viewDateChange.next(viewDate); calendarOp.hide()"
+      ></p-calendar>
+    </p-overlayPanel>
+  </div>
+
+  <div class="flex justify-end gap-5">
+    <p-dropdown
+      [options]="types"
+      [(ngModel)]="selectedType"
+      (onChange)="onChangeType($event)"
+      optionLabel="name"
+    />
+
+    <button pButton pRipple rounded="true" class="primary hover:bg-blue-700 flex justify-center gap-[6px] font-bold" (click)="addNew()">
+      <img src="assets/icon/icon-plus.svg" alt=""> Create
+    </button>
+  </div>
+</div>

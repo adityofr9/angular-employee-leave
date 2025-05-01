@@ -1,0 +1,20 @@
+<div class="panel custom-table mb-4">
+    <div class="flex items-center">
+        <h4 class="mb-[30px] font-semibold text-[24px] leading-[36px]">Stats Meeting</h4>
+        <div class="ml-auto w-[340px]">
+            <!-- <filter-table-user [fields]="filterFields" [isDefault]="true"
+                (onSubmitFilter)="filtered($event)"></filter-table-user> -->
+        </div>
+    </div>
+
+    <div class="w-full pt-5" *ngIf="chart">
+        <apx-chart [series]="chart.series" [chart]="chart.chart" [colors]="chart.colors" [stroke]="chart.stroke"
+            [plotOptions]="chart.plotOptions" [fill]="chart.fill" [labels]="chart.labels" [markers]="chart.markers"
+            [xaxis]="chart.xaxis" [yaxis]="chart.yaxis" [grid]="chart.grid" [tooltip]="chart.tooltip"
+            [legend]="chart.legend" class="rounded-lg bg-white dark:bg-black"></apx-chart>
+    </div>
+
+    <ng-template #loading>
+        <div class="skeleton w-full h-[300px]"></div>
+    </ng-template>
+</div>

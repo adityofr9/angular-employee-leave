@@ -1,0 +1,84 @@
+<div class="p-4 lg:p-10 flex items-center">
+  <p class="text-xl lg:text-[28px] mb-0 font-bold">Quiz Settings</p>
+  <div class="ml-auto">
+    <i class="cursor-pointer pi pi-times font-bold text-lg lg:text-2xl" (click)="onClose()"></i>
+  </div>
+</div>
+<div class="p-4 lg:p-10 pt-0 overflow-y-auto max-h-[570px]">
+  <form [formGroup]="forms" (ngSubmit)="onSubmit()">
+    <div class="grid grid-cols-1 gap-4">
+      <div class="form-group">
+        <p-floatLabel>
+          <input
+            pInputText
+            pKeyFilter="num"
+            formControlName="questionsShown"
+            [ngClass]="{ 'is-invalid': showErrorFormControl('questionsShown') }"
+            [maxlength]="2"
+          />
+          <label for="">Questions shown</label>
+        </p-floatLabel>
+        <p class="text-sm !text-[#919191] mb-0 !mt-[10px]">
+          The value cannot be more than total questions
+        </p>
+        <alert-error-input
+          [control]="getFormControl('questionsShown')"
+          [label]="'Questions shown'"
+        ></alert-error-input>
+      </div>
+      <div class="form-group">
+        <p-floatLabel>
+          <input
+            pInputText
+            pKeyFilter="num"
+            formControlName="maximalAttempts"
+            [ngClass]="{
+              'is-invalid': showErrorFormControl('maximalAttempts')
+            }"
+            [maxlength]="2"
+          />
+          <label for="">Maximal quiz attempt</label>
+        </p-floatLabel>
+        <alert-error-input
+          [control]="getFormControl('maximalAttempts')"
+          [label]="'Maximal quiz attempt'"
+        ></alert-error-input>
+      </div>
+      @if (false) {
+        <div class="form-group">
+          <p-floatLabel>
+            <input
+              pInputText
+              pKeyFilter="num"
+              formControlName="minimalPoint"
+              [ngClass]="{ 'is-invalid': showErrorFormControl('minimalPoint') }"
+              [maxlength]="2"
+            />
+            <label for="">Minimal point to access quiz</label>
+          </p-floatLabel>
+          <alert-error-input
+            [control]="getFormControl('minimalPoint')"
+            [label]="'Minimal point to access quiz'"
+          ></alert-error-input>
+        </div>
+      }
+      <div class="flex items-center gap-3">
+        <p-inputSwitch
+          formControlName="randomizeQuizEnabled"
+        />
+        <span class="text-lg">Randomize quiz</span>
+      </div>
+    </div>
+
+    <div class="flex justify-end my-10">
+      <button
+        pButton
+        pRipple
+        label="Save"
+        type="submit"
+        rounded="true"
+        class="primary hover:bg-blue-700"
+      ></button>
+    </div>
+  </form>
+</div>

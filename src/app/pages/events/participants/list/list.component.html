@@ -1,0 +1,83 @@
+<div class="panel custom-table">
+    <div class="flex items-center justify-content-between mb-3">
+      <h4 class="text-[18px] lg:text-[24px]">{{title.getTitle()}}</h4>
+      <div class="ml-auto flex items-center">
+        <button pButton pRipple label="Add" icon="pi pi-plus" class="shadow-none mr-2 bg-transparent border text-[#4D5562]" routerLink="add"></button>
+        <button pButton pRipple label="Import" icon="pi pi-upload" class="shadow-none mr-2 bg-transparent border text-[#4D5562]" (click)="showImportDialog()"></button>
+        <button pButton pRipple label="Export" icon="pi pi-external-link" class="shadow-none mr-2 bg-transparent border text-[#4D5562]" (click)="exportData()"></button>
+        <button pButton pRipple icon="pi pi-refresh" class="shadow-none bg-transparent border text-[#4D5562] h-[36px] w-[40px]" (click)="getData()"></button>
+      </div>
+    </div>
+
+    <div class="flex justify-end items-center mb-4">
+      <div class="mr-auto flex items-center relative">
+        <p class="m-0">Show</p>
+        <div class="custom-pagination">
+          <p-paginator
+            [rows]="paginator?.limit"
+            [first]="0"
+            [totalRecords]="paginator?.totalPage"
+            [pageLinkSize]="onPages()"
+            [rowsPerPageOptions]="[10, 20, 50, 100]"
+            (onPageChange)="onPageChange($event)"
+          />
+        </div>
+        <p class="m-0 pl-[10px]">entries</p>
+      </div>
+      <app-search [val]="Query.keyword" (value)="onSearch($event)"></app-search>
+    </div>
+
+    <p-table
+      #dt
+      [columns]="list"
+      [rows]="paginator?.limit"
+      [first]="0"
+      [exportHeader]="'customExportHeader'"
+      [value]="list"
+      dataKey="id"
+      [scrollable]="true"
+      [sortField]="'createdAt'"
+      [sortOrder]="-1"
+      styleClass="rounded-md"
+      (onSort)="onSort($event)">
+
+      <ng-template pTemplate="header" class="bg-[#fff]">
+        <tr>
+          <th style="min-width:80px">
+            ID
+          </th>
+          <th pSortableColumn="user.name" style="min-width:120px">
+            Participant Name
+            <p-sortIcon field="userName" />
+          </th>
+          <th pSortableColumn="user.cin" style="min-width:150px">
+            CIN
+            <p-sortIcon field="userCin" />
+          </th>
+          <th pSortableColumn="createdAt" style="min-width:200px">
+            Created Date
+            <p-sortIcon field="createdAt" />
+          </th>
+          <th style="width:100px" class="action" alignFrozen="right" pFrozenColumn>Action</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-participant  let-i="rowIndex">
+        <tr>
+      <td>{{participant.index}}</td>
+          <td>{{participant.userName}}</td>
+          <td>{{participant.userCin}}</td>
+          <td>{{participant.createdAt | date:'dd / MMM / yyyy HH:mm'}}</td>
+          <td class="action-list" alignFrozen="right" pFrozenColumn>
+            <div class="badge w-fit flex items-center justify-center border-1 border-[#E5E7EB] rounded-[8px]">
+              <!-- <div class="btn border-0 shadow-none cursor-pointer text-[#5EC269] hover:bg-[rgba(229,231,235,0.3)]" (click)="onEdit(participant)"><i class="pi pi-pencil" style="font-size: 1rem"></i> </div> -->
+              <div class="btn border-0 shadow-none cursor-pointer text-[#D12114] hover:bg-[rgba(229,231,235,0.3)]" (click)="onDelete(participant?.id)"><i class="pi pi-times" style="font-size: 1rem"></i> </div>
+
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <app-paginator-bottom *ngIf="paginator" [data]="paginator" (onValueChange)="pagination($event)"></app-paginator-bottom>
+  </div>

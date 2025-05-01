@@ -1,0 +1,109 @@
+<div class="p-4 lg:p-10 flex items-center">
+  <p class="text-xl lg:text-[28px] mb-0 font-bold">Upload Files</p>
+  <div class="ml-auto">
+    <i class="cursor-pointer pi pi-times font-bold text-lg lg:text-2xl" (click)="onClose()"></i>
+  </div>
+</div>
+<div class="p-4 lg:p-10 pt-0 overflow-y-auto max-h-[570px]">
+  <form [formGroup]="forms" (ngSubmit)="onSubmit()">
+    <div class="grid grid-cols-1 gap-4">
+      <div>
+        <div class="form-group custom-inputIcon">
+          <p-iconField iconPosition="right">
+            @if (tempLogo.length == 0) {
+              <p-inputIcon styleClass="pi pi-plus" (click)="fileUploadLogo.tiggerOut()"></p-inputIcon>
+            }
+            <p-floatLabel>
+              <input pInputText readonly="true" class="disabled:!bg-transparent" formControlName="logosName" />
+              <label for="logo">Logo</label>
+            </p-floatLabel>
+          </p-iconField>
+        </div>
+        <file-upload
+          #fileUploadLogo
+          (onValueChange)="onAddFile($event, 'logo')"
+          [accept_file]="'.jpg,.jpeg,.png'"
+          [allowedImageTypes]="['image/jpg', 'image/jpeg', 'image/png']"
+          [type_file]="'image'"
+          [maxSizeImage]="25"
+          [showImage]="true"
+          [multiple]="false"
+          [message]="'Maximum size 25 MB with aspect ratio 1:1 (square). Supports JPEG or PNG only.'"
+          [ratio]="1 / 1"
+          [mediaList]="tempLogo"
+        ></file-upload>
+      </div>
+
+      <div>
+        <div class="form-group custom-inputIcon">
+          <p-iconField iconPosition="right">
+            @if (tempMedia.length == 0) {
+              <p-inputIcon styleClass="pi pi-plus" (click)="fileUploadMedia.tiggerOut()"></p-inputIcon>
+            }
+            <p-floatLabel>
+              <input pInputText readonly="true" class="disabled:!bg-transparent" formControlName="mediaName" />
+              <label for="media">Media</label>
+            </p-floatLabel>
+          </p-iconField>
+        </div>
+        <file-upload
+          #fileUploadMedia
+          (onValueChange)="onAddFile($event, 'media')"
+          [accept_file]="'.jpg,.jpeg,.png,.mp4'"
+          [allowedImageTypes]="['image/jpg', 'image/jpeg', 'image/png']"
+          [allowedVideoTypes]="['video/mp4']"
+          [allowedDocumentTypes]="[]"
+          [type_file]="'media'"
+          [maxSizeImage]="25"
+          [maxSizeVideo]="25"
+          [maxFiles]="10"
+          [showImage]="true"
+          [multiple]="true"
+          [message]="'Maximum size 25 MB per file (can upload up to 10 files). Supports JPEG, PNG, or MP4 only.'"
+          [ratio]="1 / 1"
+          [mediaList]="tempMedia"
+        ></file-upload>
+      </div>
+
+      <div>
+        <div class="form-group custom-inputIcon">
+          <p-iconField iconPosition="right">
+            @if (tempDoc.length == 0) {
+              <p-inputIcon styleClass="pi pi-plus" (click)="fileUploadDocument.tiggerOut()"></p-inputIcon>
+            }
+            <p-floatLabel>
+              <input pInputText readonly="true" class="disabled:!bg-transparent" formControlName="documentName" />
+              <label for="document">Document</label>
+            </p-floatLabel>
+          </p-iconField>
+        </div>
+        <file-upload
+          #fileUploadDocument
+          (onValueChange)="onAddFile($event, 'document')"
+          [accept_file]="'.pdf'"
+          [allowedDocumentTypes]="['application/pdf']"
+          [type_file]="'document'"
+          [maxFiles]="10"
+          [maxSizeDocument]="25"
+          [showImage]="true"
+          [multiple]="true"
+          [message]="'Maximum size 25 MB per file (can upload up to 10 files). Supports PDF only.'"
+          [mediaList]="tempDoc"
+        ></file-upload>
+      </div>
+
+    </div>
+
+    <div class="flex justify-end gap-2 my-10">
+      <button
+        pButton
+        pRipple
+        label="Save"
+        type="submit"
+        rounded="true"
+        class="primary hover:bg-blue-700"
+      ></button>
+      <!-- [disabled]="(!forms.value.documents && !forms.value.media && !forms.value.logos) && (forms.value.existingLogos?.length == 0 && forms.value.existingMedia?.length == 0 && forms.value.existingDocuments?.length == 0)" -->
+    </div>
+  </form>
+</div>

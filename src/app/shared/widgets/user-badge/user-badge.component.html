@@ -1,0 +1,27 @@
+<div
+  [ngClass]="{
+    '!bg-[#FFF5CC] !text-[#DB8E00]':
+      maskStatus() == 'Waiting For Approval' || maskStatus() == 'Suspended' || maskStatus() == 'In Progress',
+    '!bg-[#CBFDD2] !text-[#008571]':
+      maskStatus() == 'Approved' || maskStatus() == 'Active' || maskStatus() == 'Complete',
+    '!bg-[#FCE1CE] !text-[#B30E10]':
+      maskStatus() == 'Rejected' || maskStatus() == 'Deleted'
+  }"
+  class="m-0 badge px-[12px] py-[6px] text-[12px] rounded-[100px] bg-[#E5E7EB] text-[#4D5562] capitalize flex align-center w-fit {{
+    customClass
+  }}"
+>
+  <i
+    class="pi me-1.5"
+    [ngClass]="{
+      'pi-inbox': maskStatus() == 'Draft',
+      'pi-clock':
+        maskStatus() == 'Waiting For Approval' || maskStatus() == 'Suspended' || maskStatus() == 'In Progress',
+      'pi-check-circle': maskStatus() == 'Approved' || maskStatus() == 'Active' || maskStatus() == 'Complete',
+      'pi-times': maskStatus() == 'Rejected',
+      'pi-trash': maskStatus() == 'Deleted'
+    }"
+
+  ></i>
+  {{ maskStatus() }}
+</div>

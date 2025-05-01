@@ -1,0 +1,45 @@
+<div class="grid lg:grid-cols-3 gap-8">
+  @if (list.length > 0) {
+    @for (item of list; track $index) {
+      <div class="panel">
+        <div class="flex flex-col justify-between h-full">
+          <div class="py-0">
+            <h3 class="!line-clamp-2 !font-bold mb-2">{{ item.labelName ?? item.name }}</h3>
+            <p class="!text-[18px]">
+              {{ item.startedAt | date : "MMM dd, yyyy" }}
+              {{
+                !isSameDate(item.startedAt, item.endedAt)
+                ? ' - ' + (item.endedAt | date : "MMM dd, yyyy")
+                : ''
+              }}
+            </p>
+          </div>
+
+          <div class="flex justify-between items-center">
+            <div>
+              <ng-template [ngxPermissionsOnly]="permission + state_permision.READ.toUpperCase()">
+                <button class="bg-transparent cursor-pointer" (click)="onEdit(item)">
+                  <img src="assets/icon/icon-edit.svg" alt="">
+                </button>
+              </ng-template>
+
+              <ng-template [ngxPermissionsOnly]="permission + state_permision.DELETE.toUpperCase()">
+                <button class="bg-transparent cursor-pointer" (click)="onDelete(item)">
+                  <img src="assets/icon/icon-delete.svg" alt="">
+                </button>
+              </ng-template>
+            </div>
+
+            <ng-template [ngxPermissionsOnly]="permission + state_permision.UPDATESTATUS.toUpperCase()">
+              <p-inputSwitch [(ngModel)]="item.status" class="custom-switch" (onChange)="onStatusChange(item)" />
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    }
+  } @else {
+    <div class="flex justify-center items-center col-span-3">
+      <p class="text-center !text-[#919191] italic text-lg">No result found</p>
+    </div>
+  }
+</div>

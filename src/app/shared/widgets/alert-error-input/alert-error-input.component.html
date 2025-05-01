@@ -1,0 +1,8 @@
+<div><small class="text-red-500" *ngIf="hasError('required')"> {{label}} is required</small></div>
+<div><small class="text-red-500" *ngIf="hasError('pattern')">Please enter a valid {{label}}</small></div>
+<div><small class="text-red-500" *ngIf="hasError('minlength')">{{label}} must be at least {{ control.errors?.minlength?.requiredLength }} characters long.</small></div>
+<div><small class="text-red-500" *ngIf="hasError('maxlength')">{{label}} cannot be more than {{ control.errors?.maxlength?.requiredLength }} characters long.</small></div>
+<div><small class="text-red-500" *ngIf="hasError('mismatch')">{{secondLabel ? secondLabel + ' and' : ''}} {{label}} does not match</small></div>
+<div><small class="text-red-500" *ngIf="hasError('min')">Minimum value is {{ control.errors?.min?.min }}</small></div>
+<div><small class="text-red-500" *ngIf="hasError('max')">Maximum value is {{ control.errors?.max?.max }}</small></div>
+

@@ -1,0 +1,52 @@
+<form [formGroup]="forms" autocomplete="off"> 
+    <div class="flex flex-row gap-4">
+      <div class="w-full"> <!-- Make this div full width -->
+        <div class="panel custom-panel mb-5">
+          <p-card>
+            <p class="m-0 font-semibold text-[24px] pb-[30px] leading-[36px] text-[#4D5562]">
+              {{ id ? 'Form Edit Event Participants' : 'Form Add Event Participants' }}
+            </p>
+            
+            <div class="pb-3">
+              <div class="grid grid-cols-2 gap-x-3">
+                <!-- FULL NAME -->
+                <div class="form-group">
+                  <p class="mb-3">Full Name</p>
+                  <input
+                    pInputText
+                    formControlName="name"
+                    placeholder="Input Full Name"
+                    [ngClass]="{ 'is-invalid': showErrorFormControl('name') }"
+                  />
+                  <alert-error-input
+                    [control]="getFormControl('name')"
+                    [label]="'Full Name'"
+                  ></alert-error-input>
+                </div>
+                <div class="form-group">
+                    <p class="mb-3">CIN</p>
+                    <input
+                      pInputText
+                      formControlName="cin"
+                      placeholder="Input CIN"
+                      [ngClass]="{ 'is-invalid': showErrorFormControl('cin') }"
+                    />
+                    <alert-error-input
+                      [control]="getFormControl('cin')"
+                      [label]="'Enter CIN'"
+                    ></alert-error-input>
+                  </div>
+  
+              </div>
+            </div>
+    
+            <div class="flex justify-content-end gap-2 pt-4">
+              <button pButton pRipple label="Cancel" (click)="back()" class="shadow-none mr-2 bg-transparent border text-[#4D5562]"></button>
+              <button (click)="onSubmit()" pButton pRipple label="Submit" class="ml-auto shadow-none border text-white bg-[#0072B9]"></button>
+            </div>
+          </p-card>
+        </div>
+      </div>
+    </div>
+  </form>
+  

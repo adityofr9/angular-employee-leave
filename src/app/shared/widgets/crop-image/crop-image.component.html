@@ -1,0 +1,23 @@
+<div class="pt-4">
+  <div class="px-4 mb-10 flex items-center">
+    <h3 class="text-[#9DA3AE] mb-0">Crop Image</h3>
+  </div>
+
+  <div class="cropper-wrapper px-4">
+    <image-cropper
+      [imageFile]="image"
+      [aspectRatio]="ratio"
+      [alignImage]="'center'"
+      [backgroundColor]="'#f0f0f0'"
+      format="jpeg"
+      backgroundColor="#ffffff"
+      (imageCropped)="imageCropped($event)"
+      ></image-cropper>
+  </div>
+</div>
+
+
+<div class="px-4 pb-4 flex justify-between mt-4">
+  <button pButton pRipple label="Cancel" (click)="onClose()" class="min-w-[100px] shadow-none cursor-pointer text-[16px] bg-transparent border border-[indigo] text-[indigo] lg:!px-12 rounded-full" ></button>
+  <button pButton pRipple label="Save" (click)="cropImage()" class="min-w-[100px] shadow-none cursor-pointer text-[16px] bg-[indigo] hover:bg-blue-700 text-white lg:!px-12 rounded-full" ></button>
+</div>

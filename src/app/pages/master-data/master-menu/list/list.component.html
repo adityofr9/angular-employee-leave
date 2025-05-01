@@ -1,0 +1,93 @@
+<div class="flex flex-col h-full minh-custom">
+  <app-header
+    [title]="'Master Menu'"
+    [hasSearch]="hasFilter"
+    [listItems]="listSearch"
+    (onSearch)="searchData($event)"
+    (onSelect)="navigateSelected($event)"
+    (onClearSearch)="searchData($event)"
+    [hasFilter]="false"
+    [hasActionBtn]="false"
+  ></app-header>
+
+
+  <p-table
+    #dt
+    [columns]="list"
+    [rows]="paginator.limit"
+    [first]="0"
+    [exportHeader]="'customExportHeader'"
+    [value]="list"
+    dataKey="id"
+    [scrollable]="true"
+    styleClass="p-datatable-striped"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    (onSort)="onSort($event)"
+    sortField="index"
+    [sortOrder]="-1">
+    <ng-template pTemplate="header" class="bg-[#fff]">
+      <tr>
+        <ng-template [ngxPermissionsOnly]="permission + state_permision.UPDATESTATUS.toUpperCase()">
+          <th pSortableColumn="status" class="w-[13%]">
+            Status
+            <p-sortIcon field="status" />
+          </th>
+        </ng-template>
+        <th pSortableColumn="index" class="w-[9%] lg:w-auto">
+          ID
+          <p-sortIcon field="index" />
+        </th>
+        <th pSortableColumn="name">
+          Name
+          <p-sortIcon field="name" />
+        </th>
+        <ng-template [ngxPermissionsOnly]="permission + state_permision.UPDATE.toUpperCase()">
+          <th style="width: 100px" alignFrozen="right" pFrozenColumn>
+            Action
+          </th>
+        </ng-template>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-menu>
+      <tr>
+        <ng-template [ngxPermissionsOnly]="permission + state_permision.UPDATESTATUS.toUpperCase()">
+          <td>
+            <p-inputSwitch [(ngModel)]="menu.status" (onChange)="onChangeStatus(menu)" />
+          </td>
+        </ng-template>
+        <td>{{ menu.index }}</td>
+        <td>{{ menu.name }}</td>
+        <ng-template [ngxPermissionsOnly]="permission + state_permision.UPDATE.toUpperCase()">
+          <td class="action-list" alignFrozen="right" pFrozenColumn>
+            <div
+              class="btn border-0 shadow-none cursor-pointer hover:bg-[rgba(229,231,235,0.3)]"
+              (click)="onEdit(menu)"
+            >
+              <img src="assets/icon/icon-edit.svg" alt="" class="w-6">
+            </div>
+          </td>
+        </ng-template>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="12" class="text-center">
+          <p class="!text-[#919191] italic m-0">No results found</p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-paginator-bottom
+    *ngIf="paginator"
+    [data]="paginator"
+    (onValueChange)="pagination($event)"
+    [showPaginator]="true"
+    [customOpt]="[15, 30, 50, 100]"
+    class="mt-auto"
+  ></app-paginator-bottom>
+</div>

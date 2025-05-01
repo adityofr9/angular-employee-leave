@@ -1,0 +1,25 @@
+<div class="flex flex-col h-full minh-custom">
+  <app-header
+    [title]="'Master Event'"
+    [hasSearch]="hasSearch"
+    [listItems]="listSearch"
+    (onSearch)="searchData($event)"
+    (onSelect)="navigateSelected($event)"
+    (onClearSearch)="searchData($event)"
+    [hasFilter]="hasFilter"
+    [filterFields]="filterFields"
+    (onSubmitFilter)="filtered($event)"
+    [hasActionBtn]="true"
+    [actionButtons]="buttonActions"
+    (onAction)="runActionBtn($event)"
+  ></app-header>
+
+  <list-events [data]="list" (deleteAction)="onDelete($event)" (statusAction)="onChangeStatus($event)"></list-events>
+
+  <app-paginator-bottom
+    *ngIf="paginator"
+    [data]="paginator"
+    (onValueChange)="pagination($event)"
+    [showPaginator]="false"
+    class="mt-auto"></app-paginator-bottom>
+</div>

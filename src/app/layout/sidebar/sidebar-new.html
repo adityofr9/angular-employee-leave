@@ -1,0 +1,292 @@
+﻿<nav
+  class="hidden sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[320px] transition-all duration-300"
+>
+  <div class="h-full bg-zero dark:bg-[#0e1726]">
+    <div class="flex items-center justify-between p-4">
+      <a routerLink="/" class="main-logo flex shrink-0 items-center">
+        <img class="w-[80px] flex-none" src="assets/media/logo.png" alt="" />
+      </a>
+      <a
+        href="javascript:;"
+        class="collapse-icon flex h-8 w-8 items-center rounded-full transition duration-300 hover:bg-gray-500/10 hover:text-primary rtl:rotate-180 dark:text-white-light dark:hover:bg-dark-light/10"
+        (click)="storeData.dispatch({ type: 'toggleSidebar'})"
+      >
+        <icon-carets-down class="m-auto rotate-90" />
+      </a>
+    </div>
+    <!-- <ng-scrollbar class="relative !h-[calc(100vh-80px)]" appearance="compact"> -->
+    <div class="relative !h-[calc(100vh-100px)] overflow-x-auto !p-4 py-0">
+      <ul class="relative space-y-0.5 font-semibold no-bullets">
+        <!-- MENU -->
+        <ng-container *ngFor="let menu of menus">
+          <ng-container *ngIf="menu.permissions">
+            <p
+              *ngIf="menu.title"
+              class="pb-2 flex items-center font-normal bg-gradient-to-r from-[#00E77E] to-[#00A3D7] bg-clip-text text-[14px] text-[#4D5562]"
+            >
+              <icon-minus class="hidden h-5 w-4 flex-none" />
+              <span>{{menu.title}}</span>
+              <span class="w-full pl-2"
+                ><hr class="w-full border-b-[#4D5562]"
+              /></span>
+            </p>
+
+            <li class="nav-item">
+              <ul class="no-bullets">
+                <ng-container *ngFor="let i of menu.submenu">
+                  <!-- Single -->
+
+                  <ng-container *ngIf="i.permissions">
+                    <li class="nav-item" *ngIf="i.submenu.length == 0">
+                      <a
+                        [routerLink]="i.path"
+                        class="group font-normal text-[14px] !text-[#4D5562] mb-2"
+                        routerLinkActive="active"
+                        (click)="toggleMobileMenu()"
+                      >
+                        <div class="flex items-center">
+                          <!-- <icon-menu-chat class="shrink-0 group-hover:!text-primary" /> -->
+                          <i
+                            *ngIf="i.iconType!='image'"
+                            class="pi shrink-0 group-hover:!text-white"
+                            [class]="i.icon"
+                          ></i>
+                          <img
+                            *ngIf="i.iconType=='image'"
+                            class="w-[20px] is-icon-white"
+                            [src]="i.icon"
+                            alt=""
+                          />
+                          <img
+                            *ngIf="i.iconType=='image'"
+                            class="w-[20px] is-icon-black"
+                            [src]="i.icon"
+                            alt=""
+                          />
+                          <span class="ltr:pl-3 rtl:pr-3">{{i.title}}</span>
+                        </div>
+                      </a>
+                    </li>
+
+                    <!-- Dropdown -->
+                    <li
+                      class="accordion menu nav-item"
+                      *ngIf="i.submenu.length > 0"
+                    >
+                      <button
+                        type="button"
+                        class="nav-link group w-full !mb-2 cursor-pointer !bg-transparent !text-sm !font-semibold !text-[#4D5562]"
+                        [ngClass]="{ active: activeDropdown.includes(i.title) }"
+                        (click)="toggleAccordion(i.title)"
+                      >
+                        <div class="flex items-center">
+                          <i
+                            *ngIf="i.iconType!='image'"
+                            class="pi shrink-0 group-hover:!text-white"
+                            [class]="i.icon"
+                          ></i>
+                          <img
+                            *ngIf="i.iconType=='image'"
+                            class="w-[20px] is-icon-white"
+                            [src]="i.icon"
+                            alt=""
+                          />
+                          <img
+                            *ngIf="i.iconType=='image'"
+                            class="w-[20px] is-icon-black"
+                            [src]="i.icon"
+                            alt=""
+                          />
+                          <span class="font-normal ltr:pl-3 rtl:pr-3"
+                            >{{i.title}}</span
+                          >
+                        </div>
+                        <div
+                          class="flex items-center"
+                          [ngClass]="{ 'rtl:rotate-90 -rotate-180': !activeDropdown.includes(i.title) }"
+                        >
+                          <icon-caret-down />
+                        </div>
+                      </button>
+                      <div
+                        [@slideDownUp]="!activeDropdown.includes(i.title)"
+                        class="accordion-content"
+                      >
+                        <ul
+                          class="pl-[20px] sub-menu text-[#4D5562] !list-disc"
+                        >
+                          <ng-container *ngFor="let sub of i.submenu">
+                            <ng-container *ngIf="sub.permissions">
+                              <li>
+                                <a
+                                  class="!px-[8px] rounded-[8px] mb-1"
+                                  [routerLink]="sub.path"
+                                  routerLinkActive="active"
+                                  (click)="toggleMobileMenu()"
+                                  >{{ sub.title }}</a
+                                >
+                              </li>
+                            </ng-container>
+                          </ng-container>
+                        </ul>
+                      </div>
+                    </li>
+                  </ng-container>
+                </ng-container>
+              </ul>
+            </li>
+          </ng-container>
+        </ng-container>
+      </ul>
+    </div>
+    <!-- </ng-scrollbar> -->
+  </div>
+</nav>
+<!-- <div [ngClass]="{ 'dark text-white-dark': store.semidark }">
+</div> -->
+
+<!-- <p-sidebar [(visible)]="sidebarVisible"> -->
+<h3>Sidebar</h3>
+<p>Lorem ipsum dolor sit amet...</p>
+<!-- </p-sidebar> -->
+
+<div class="h-screen bg-[indigo] w-[100px] lg:p-4 flex flex-col">
+  <div class="sidebar-header">
+    <div class="flex mb-8">
+      <!-- <p-button (onClick)="sidebarVisible = true" icon="pi pi-arrow-right" /> -->
+      <img
+        src="assets/media/logo-only.svg"
+        alt=""
+        class="cursor-pointer w-full"
+        (click)="sidebarVisible = true"
+      />
+      <!-- <div class="block text-white">
+        <div class="text-lg">
+          Hi, <span class="font-bold">Benita Katarina!</span>
+        </div>
+        <div class="text-sm">
+          U065432
+        </div>
+      </div> -->
+    </div>
+    <hr class="border-t-4 border-[#CCD4E9]" />
+  </div>
+  <div class="sidebar-menu">
+    <!-- MENU -->
+    <ul class="p-0">
+      <ng-container *ngFor="let menu of menus">
+        <ng-container *ngIf="menu.permissions">
+          <li class="nav-item no-bullets mb-4">
+            <p *ngIf="menu.title" class="pb-2 flex items-center font-normal">
+              <icon-minus class="hidden h-5 w-4 flex-none" />
+              <span class="text-white">{{menu.title}}</span>
+              <span class="w-full pl-2"
+                ><hr class="w-full border-b-white"
+              /></span>
+            </p>
+
+            <ul class="no-bullets p-0">
+              <ng-container *ngFor="let i of menu.submenu">
+                <!-- Single -->
+
+                <ng-container *ngIf="i.permissions">
+                  <li
+                    class="nav-item p-4 rounded-lg hover:bg-[#1C2553]"
+                    *ngIf="i.submenu.length == 0"
+                  >
+                    <a
+                      [routerLink]="i.path"
+                      class="group font-normal text-[14px] !text-white mb-2"
+                      routerLinkActive="active"
+                      (click)="toggleMobileMenu()"
+                    >
+                      <div class="flex justify-center items-center">
+                        <!-- <icon-menu-chat class="shrink-0 group-hover:!text-primary" /> -->
+                        <i
+                          *ngIf="i.iconType!='image'"
+                          class="pi shrink-0 !text-2xl group-hover:!text-white"
+                          [class]="i.icon"
+                        ></i>
+                        <img
+                          *ngIf="i.iconType=='image'"
+                          class="w-full"
+                          [src]="i.icon"
+                          alt=""
+                        />
+                        <!-- <span class="ltr:pl-3 rtl:pr-3" >{{i.title}}</span> -->
+                      </div>
+                    </a>
+                  </li>
+
+                  <!-- Dropdown -->
+                  <li
+                    class="accordion menu nav-item"
+                    *ngIf="i.submenu.length > 0"
+                  >
+                    <button
+                      type="button"
+                      class="nav-link group w-full !mb-2 cursor-pointer !bg-transparent !text-sm !font-semibold !text-[#4D5562]"
+                      [ngClass]="{ active: activeDropdown.includes(i.title) }"
+                      (click)="toggleAccordion(i.title)"
+                    >
+                      <div class="flex justify-center items-center">
+                        <i
+                          *ngIf="i.iconType!='image'"
+                          class="pi shrink-0 !text-2xl group-hover:!text-white"
+                          [class]="i.icon"
+                        ></i>
+                        <img
+                          *ngIf="i.iconType=='image'"
+                          class="w-full"
+                          [src]="i.icon"
+                          alt=""
+                        />
+                        <span class="font-normal ltr:pl-3 rtl:pr-3"
+                          >{{i.title}}</span
+                        >
+                      </div>
+                      <div
+                        class="flex items-center"
+                        [ngClass]="{ 'rtl:rotate-90 -rotate-180': !activeDropdown.includes(i.title) }"
+                      >
+                        <icon-caret-down />
+                      </div>
+                    </button>
+                    <div
+                      [@slideDownUp]="!activeDropdown.includes(i.title)"
+                      class="accordion-content"
+                    >
+                      <ul class="pl-[20px] sub-menu text-[#4D5562] !list-disc">
+                        <ng-container *ngFor="let sub of i.submenu">
+                          <ng-container *ngIf="sub.permissions">
+                            <li>
+                              <a
+                                class="!px-[8px] rounded-[8px] mb-1"
+                                [routerLink]="sub.path"
+                                routerLinkActive="active"
+                                (click)="toggleMobileMenu()"
+                                >{{ sub.title }}</a
+                              >
+                            </li>
+                          </ng-container>
+                        </ng-container>
+                      </ul>
+                    </div>
+                  </li>
+                </ng-container>
+              </ng-container>
+            </ul>
+          </li>
+        </ng-container>
+      </ng-container>
+    </ul>
+  </div>
+  <div class="mt-auto">
+    <div
+      class="p-4 hover:bg-[#1C2553] rounded-lg cursor-pointer"
+      (click)="logout()"
+    >
+      <img src="assets/icon/icon-logout.svg" alt="" />
+    </div>
+  </div>
+</div>

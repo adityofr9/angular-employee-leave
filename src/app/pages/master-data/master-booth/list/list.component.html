@@ -1,0 +1,164 @@
+<div class="flex flex-col minh-custom">
+  <app-header
+    [title]="'Master Booth'"
+    [hasSearch]="true"
+    [listItems]="listSearch"
+    (onSearch)="searchData($event)"
+    (onSelect)="navigateSelected($event)"
+    (onClearSearch)="searchData($event)"
+    [hasFilter]="false"
+    [hasActionBtn]="true"
+    [actionButtons]="buttonActions"
+    (onAction)="runActionBtn($event)"
+  ></app-header>
+
+  <p-table
+    #dt
+    [columns]="list"
+    [rows]="paginator.limit"
+    [first]="0"
+    [exportHeader]="'customExportHeader'"
+    [value]="list"
+    dataKey="id"
+    [scrollable]="true"
+    styleClass="p-datatable-striped"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    (onSort)="onSort($event)"
+    sortField="index"
+    [sortOrder]="-1">
+    <ng-template pTemplate="header" class="bg-[#fff]">
+      <tr>
+        <ng-template [ngxPermissionsOnly]="permission + state_permision.UPDATESTATUS.toUpperCase()">
+          <th pSortableColumn="status">
+            Status
+            <p-sortIcon field="status" />
+          </th>
+        </ng-template>
+        <th pSortableColumn="index">
+          ID
+          <p-sortIcon field="index" />
+        </th>
+        <th pSortableColumn="name">
+          Name
+          <p-sortIcon field="name" />
+        </th>
+        <th pSortableColumn="startedAt">
+          Start Date
+          <p-sortIcon field="startedAt" />
+        </th>
+        <th pSortableColumn="endedAt">
+          End Date
+          <p-sortIcon field="endedAt" />
+        </th>
+        <th pSortableColumn="eventName">
+          Event
+          <p-sortIcon field="eventName" />
+        </th>
+        <th pSortableColumn="assignedTo">
+          Assigned to
+          <p-sortIcon field="assignedTo" />
+        </th>
+        <!-- <ng-template [ngxPermissionsOnly]="permission + state_permision.DELETE.toUpperCase()"> -->
+          <th style="width: 100px" alignFrozen="right" pFrozenColumn>
+            Action
+          </th>
+        <!-- </ng-template> -->
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-booth>
+      <tr>
+        <ng-template [ngxPermissionsOnly]="permission + state_permision.UPDATESTATUS.toUpperCase()">
+          <td>
+            <p-inputSwitch [(ngModel)]="booth.status" (onChange)="onChangeStatus(booth)" [disabled]="booth?.outOfRange" [class.cursor-not-allowed]="booth?.outOfRange" />
+          </td>
+        </ng-template>
+        <td>{{ booth.index }}</td>
+        <td>
+          <ng-template
+            [ngxPermissionsOnly]="permission + state_permision.READ.toUpperCase()"
+            [ngxPermissionsOnlyThen]="thenBlock"
+            [ngxPermissionsOnlyElse]="elseBlock">
+          </ng-template>
+          <ng-template #thenBlock>
+            <a [routerLink]="booth.id" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="underline truncate">
+              {{ booth.labelName ?? booth.name }}
+            </a>
+          </ng-template>
+          <ng-template #elseBlock>
+            {{ booth.labelName ?? booth.name }}
+          </ng-template>
+        </td>
+        <td>{{ booth.startedAt | date:'yyy/MM/dd' }}</td>
+        <td>{{ booth.endedAt | date:'yyy/MM/dd' }}</td>
+        <td class="truncate">{{ booth.labelEvent ?? booth.eventName }}</td>
+        <td class="truncate">
+          @if (booth?.assignedTo?.length > 0) {
+            <p
+              class="truncate w-fit mb-0"
+              [class.cursor-pointer]="(booth.assignedTo.length ?? 0) > 1"
+              (mouseenter)="(booth.assignedTo.length ?? 0) > 1 ? op.toggle($event) : null"
+            >
+              {{ booth.assignedTo[0] }}
+            </p>
+            <p-overlayPanel #op>
+              <p-scrollPanel [style]="{ width: '100%', height: '100px' }" (mouseleave)="op.hide()">
+                <div class="flex flex-col">
+                  <small
+                    *ngFor="let admin of booth.assignedTo"
+                    class="font-semibold truncate"
+                    >{{ admin }}</small
+                  >
+                </div>
+              </p-scrollPanel>
+            </p-overlayPanel>
+          }
+        </td>
+        <td class="action-list" alignFrozen="right" pFrozenColumn>
+          <ng-template
+            [ngxPermissionsOnly]="permission + state_permision.DELETE.toUpperCase()"
+            [ngxPermissionsOnlyThen]="thenBlockDelete"
+            [ngxPermissionsOnlyElse]="elseBlockDelete">
+          </ng-template>
+
+          <ng-template #thenBlockDelete>
+            <div
+              class="btn border-0 shadow-none cursor-pointer text-[#D12114] hover:bg-[rgba(229,231,235,0.3)]"
+              (click)="onDelete(booth)"
+            >
+              <i class="pi pi-trash"></i>
+            </div>
+          </ng-template>
+          <ng-template #elseBlockDelete>
+            <div
+              class="btn border-0 shadow-none text-[#919191] cursor-not-allowed"
+              (click)="noPermissionDelete()"
+            >
+              <i class="pi pi-trash"></i>
+            </div>
+          </ng-template>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="12" class="text-center">
+          <p class="!text-[#919191] italic m-0">No results found</p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-paginator-bottom
+    *ngIf="paginator"
+    [data]="paginator"
+    (onValueChange)="pagination($event)"
+    [showPaginator]="true"
+    [customOpt]="[15, 30, 50, 100]"
+    class="mt-auto"
+  ></app-paginator-bottom>
+
+</div>

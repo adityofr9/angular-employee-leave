@@ -1,0 +1,78 @@
+<div class="w-full text-[#394150]" appDrop (fileDropped)="dropFile($event)">
+  <div
+    class="border-2 border-[#DDDDDD] rounded-lg p-4 lg:p-10 bg-[#F3F4F6] hover:bg-gray-50 transition ease-in-out duration-200 mb-2"
+    [class.border-dashed]="listFile.length === 0"
+  >
+    <p-scrollPanel [style]="{ width: '100%', height: '175px' }" styleClass="custom-scrollpanel">
+      <div class="flex flex-wrap gap-8 justify-center text-center h-full">
+
+        <div class="grid gap-5" [ngClass]="{'grid-cols-5': multiple && listFile.length > 2 , '!grid-cols-4': multiple && listFile.length === 2, '!grid-cols-3': multiple && listFile.length === 1}">
+          <!-- @if ((maxFiles && listFile.length < maxFiles) || (!maxFiles && listFile.length === 0) || (multiple && listFile.length > 0 && listFile.length > maxFiles )) { -->
+          @if (
+            (maxFiles && listFile.length < maxFiles) ||
+            (!maxFiles && listFile.length === 0) ||
+            (multiple && listFile.length > 0 && (!maxFiles || listFile.length < maxFiles));
+          ) {
+            <div [ngClass]="{'py-5': multiple && listFile.length > 0, 'col-span-2': multiple && listFile.length >= 1, 'col-span-5': multiple && listFile.length == 0}">
+              <div class="justify-items-center content-center mx-auto border-2 border-dashed border-[#919191] rounded-lg p-4 lg:px-10 h-full">
+                <p class="!text-[#919191] text-lg font-bold mb-3">Drag and drop file<br>or</p>
+                <label
+                  class="cursor-pointer inline-block px-6 py-2 shadow-none mt-auto ml-auto bg-[indigo] hover:bg-blue-700 text-white rounded-full"
+                  [class.lg:!px-12]="listFile.length === 0"
+                >
+                  <!-- <i class="pi pi-upload mr-2"></i>  -->
+                  Upload file
+                  <input
+                    #inputEl
+                    type="file"
+                    [accept]="accept_file"
+                    class="hidden"
+                    (change)="dropFile($event)"
+                    [multiple]="multiple"
+                    id="file"
+                  />
+                </label>
+              </div>
+            </div>
+          }
+
+          @if (listFile.length > 0 && showImage) {
+            <!-- <p-scrollPanel [style]="{ width: '100%', height: '200px' }" styleClass="custom-scrollpanel"> -->
+              @for (item of listFile; track $index) {
+                <div class="relative py-5 w-[150px]">
+                  <div class="flex flex-col items-center border border-[#DCE1E4] bg-[#0000004D] rounded-lg h-[150px] overflow-hidden">
+                    @switch (item.type) {
+                      @case ('video') {
+                        <img [src]="'assets/media/video-default.png'" alt="" class="object-none h-full px-2">
+                      }
+
+                      @case ('image') {
+                        <!-- item?.preview ??  class="aspect-square h-[150px] object-cover object-center" -->
+                        <img [src]="'assets/media/img-default.png'" alt="" class="object-none h-full px-2">
+                      }
+
+                      @case ('document') {
+                        <img [src]="'assets/media/pdf-default.png'" alt="" class="object-none h-full px-2">
+                      }
+                    }
+                    <div class="bg-[#1F1F1F80] text-white text-[14px] font-normal line-clamp-1 w-full h-[24px]"
+                    [class.mt-auto]="item.type != 'video'">
+                      {{ item?.name }}
+                    </div>
+                  </div>
+                  <div class="absolute top-[6px] end-0 w-[20px] h-[20px]">
+                    <button pButton pRipple type="button" icon="pi pi-times" class="shadow-none text-[14px] w-[30px] h-[30px] bg-[#C42F35] rounded-full text-white" (click)="removeFile($index, item?.id)"></button>
+                  </div>
+                </div>
+              }
+            <!-- </p-scrollPanel> -->
+          }
+        </div>
+
+      </div>
+    </p-scrollPanel>
+  </div>
+  @if (message) {
+    <p class="!text-[#919191] text-[14px]">{{ message }}</p>
+  }
+</div>

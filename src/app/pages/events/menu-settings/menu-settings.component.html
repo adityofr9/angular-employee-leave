@@ -1,0 +1,51 @@
+<app-header [title]="'Settings'" [hasFilter]="true" [hasActionBtn]="false"></app-header>
+
+<div class="panel custom-panel h-full">
+  <p-tabView>
+    <p-tabPanel header="Menu Settings">
+      <list-menu-settings></list-menu-settings>
+    </p-tabPanel>
+    <p-tabPanel header="Activity Settings">
+      <activity-settings [datas]="data?.activitySettings"></activity-settings>
+    </p-tabPanel>
+    <p-tabPanel header="Other Settings">
+
+      <form [formGroup]="otherforms" (ngSubmit)="onSubmit()">
+        <div class="block mb-8">
+          <div class="grid grid-cols-1">
+            <div class="form-group flex">
+              <p-inputSwitch formControlName="displayPoint" class="mr-3" />
+              <label for="displayPoint" class="my-auto text-[#1f1f1f]">Display point on apps</label>
+              <alert-error-input
+                [control]="getFormControl('displayPoint')"
+                [label]="'Display point on apps'"
+              ></alert-error-input>
+            </div>
+
+            <div class="form-group flex">
+              <p-inputSwitch formControlName="scanQrFeature" class="mr-3" />
+              <label for="scanQrFeature" class="my-auto text-[#1f1f1f]">Scan QR Feature</label>
+              <alert-error-input
+                [control]="getFormControl('scanQrFeature')"
+                [label]="'Scan QR Feature'"
+              ></alert-error-input>
+            </div>
+          </div>
+        </div>
+
+        @if (!isEditOther) {
+          <div class="flex justify-end">
+            <button pButton pRipple type="button" label="Edit" rounded="true" class="primary" (click)="onEdit()"></button>
+          </div>
+        } @else {
+          <div class="flex justify-end gap-8 mt-5">
+            <button pButton pRipple label="Cancel" type="button" rounded="true" outlined="true" class="primary" (click)="onView()"></button>
+            <button pButton pRipple label="Save" type="submit" rounded="true" class="primary"></button>
+          </div>
+        }
+
+      </form>
+
+    </p-tabPanel>
+  </p-tabView>
+</div>

@@ -1,0 +1,407 @@
+<app-header
+  [title]="data?.title"
+  [hasFilter]="false"
+  [hasActionBtn]="true"
+  [actionButtons]="buttonActions"
+  (onAction)="runActionBtn($event)"
+></app-header>
+
+<div class="lg:flex gap-5">
+  <div class="grid grid-cols-1 gap-5 lg:w-[30%]">
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center justify-between">
+        <h3>Details</h3>
+        <p-button pTooltip="Edit Schedule" [text]="true" (onClick)="editData()">
+          <img src="assets/icon/edit.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+      </div>
+      <div class="panel custom-panel h-[35dvh]">
+        <p-scrollPanel [style]="{ width: '100%', height: '100%' }" styleClass="custom-scrollpanel">
+          <div class="grid grid-cols-2 gap-3">
+            <div class="form-group mb-3 col-span-2">
+              <p class="mb-1">Title</p>
+              <h3 class="font-bold mb-0">{{ data?.labelTitle }}</h3>
+            </div>
+            <div class="form-group col-span-2">
+              <p class="mb-1">Date</p>
+              <p class="font-bold mb-0">{{ data?.date | date : "MMM dd, yyyy" }}</p>
+            </div>
+            <div class="form-group">
+              <p class="mb-1">Start Time</p>
+              <p class="font-bold mb-0">{{ data?.labelStartTime }}</p>
+            </div>
+            <div class="form-group">
+              <p class="mb-1">End Time</p>
+              <p class="font-bold mb-0">{{ data?.labelEndTime }}</p>
+            </div>
+            <div class="form-group col-span-2">
+              <p class="mb-1">Information</p>
+              <span class="font-bold mb-0" [innerHTML]="data?.information ?? '-'"></span>
+            </div>
+            <div class="form-group col-span-2">
+              <p class="mb-1">Image-File</p>
+              <p class="font-bold mb-0">{{ data?.media?.name ?? '-' }}</p>
+            </div>
+            <div class="form-group col-span-2">
+              <p class="mb-1">Document</p>
+              <p class="font-bold mb-0">
+                @for (doc of data?.documents; track $index) {
+                  {{ doc?.name }};
+                } @empty {
+                  -
+                }
+              </p>
+            </div>
+          </div>
+        </p-scrollPanel>
+      </div>
+    </div>
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <h3>Reviews</h3>
+          <p-inputSwitch [(ngModel)]="reviewOn" (onChange)="toggleReview($event)" [disabled]="today > endDate" />
+        </div>
+        <div class="flex items-center">
+          <p-button pTooltip="Sync Reviews" [text]="true" (click)="getReview(true)" [disabled]="isSyncReview">
+            <img src="assets/icon/sync.svg" alt="icon" class="w-7 h-7" [class.pi-spin]="isSyncReview" />
+          </p-button>
+          <p-button pTooltip="Export Reviews" [text]="true" (click)="exportReview()" [disabled]="isLoadingExpReview">
+            <img src="assets/icon/download.svg" alt="icon" class="w-7 h-7"/>
+          </p-button>
+        </div>
+      </div>
+      <div class="panel custom-panel h-[62dvh]">
+        <p-scrollPanel [style]="{ width: '100%', height: '100%' }" styleClass="custom-scrollpanel">
+          @for (reviews of listReviews; track $index) {
+            <div class="flex items-start gap-6">
+              @if (!reviews.profileUrl) {
+                <div class="avatar rounded-full h-12 w-12 bg-[#CCD4E9]">
+                  <div class="font-bold">{{ helper.getInitial(reviews?.name) }}</div>
+                </div>
+              } @else {
+                <img [src]="reviews?.profileUrl" alt="" class="w-12 h-12 rounded-full">
+              }
+
+              <div class="flex-1">
+                <div class="flex justify-between gap-5">
+                  <div>
+                    <h6 class="text-base">{{ reviews?.name }}</h6>
+                    <p class="mb-0 text-xs">
+                      commented “{{ helper.truncateText(reviews?.comment, 100) }}”
+                    </p>
+                    <p class="text-xs">{{ reviews?.reviewDate | date:'MMM dd, yyyy HH:mm' }}</p>
+                  </div>
+
+                  <p-rating [stars]="5" [(ngModel)]="reviews.rating" [readonly]="true" [cancel]="false">
+                    <ng-template pTemplate="onicon">
+                      <img src="assets/icon/ratingOn.svg" width="14px" height="14px" />
+                    </ng-template>
+                    <ng-template pTemplate="officon">
+                      <img src="assets/icon/ratingOff.svg" width="14px" height="14px" />
+                    </ng-template>
+                  </p-rating>
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <div class="flex justify-center items-center col-span-3">
+              <p class="text-center !text-[#DDD] italic text-sm">No data available</p>
+            </div>
+          }
+        </p-scrollPanel>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-col gap-3 lg:w-[35%]">
+    <div class="flex items-center gap-4 h-11">
+      <h3>Live Question</h3>
+      <p-inputSwitch [(ngModel)]="liveQuestionOn" (onChange)="toggleLiveQuestion($event)" [disabled]="today > endDate" />
+    </div>
+    <div class="panel custom-panel h-full">
+      <h6>All Questions</h6>
+      <hr class="border border-[#f5f5f5]">
+      <p-scrollPanel [style]="{ width: '100%', height: '97dvh' }" styleClass="custom-scrollpanel">
+        <div class="grid grid-cols-1">
+          @for (question of listQuestions; track $index) {
+            @if (!question?.parentId) {
+              <div class="relative">
+                <p-accordion class="w-full custom-accor" expandIcon="pi pi-chevron-down" collapseIcon="pi pi-chevron-up">
+                  <p-accordionTab iconPos="end" [disabled]="question?.replies?.length === 0">
+                    <ng-template pTemplate="header">
+                      <div class="flex align-items-center gap-2 w-full">
+                        @if (question.profileUrl) {
+                          <img
+                            [src]="question?.profileUrl"
+                            alt=""
+                            class="w-12 h-12 rounded-full"
+                          />
+                        } @else {
+                          <div class="rounded-full flex items-center justify-center bg-[#CCD4E9] w-12 h-12">
+                            <div class="font-bold text-sm text-black">{{ question?.initials }}</div>
+                          </div>
+                        }
+                        <div class="block w-full">
+                          <div class="flex justify-between mb-1">
+                            <span class="font-bold white-space-nowrap text-[#1F1F1F] capitalize">
+                              {{ question?.labelName }}
+                            </span>
+                            <!-- <div class="flex items-start gap-1 mr-6">
+                              <img [src]="question?.isSolved ? 'assets/icon/answer-green.svg' : 'assets/icon/answer-grey.svg'" alt="" class="w-5">
+                              <img [src]="question?.isPinned ? 'assets/icon/pinOn.svg' : 'assets/icon/pinOff.svg'" alt="" class="w-5">
+                            </div> -->
+                          </div>
+                          <p class="mb-0 text-xs font-normal break-all">
+                            asked “{{ helper.truncateText(question?.text, 100) }}”
+                          </p>
+                          <p class="text-xs font-normal mb-0">
+                            {{ question?.createdAt | date:'MMM dd, yyyy HH:mm' }}
+                          </p>
+                        </div>
+                      </div>
+                    </ng-template>
+                    @if (question?.replies.length > 0) {
+                      <div class="grid grid-cols-1 gap-5">
+                        @for (reply of question?.replies; track $index) {
+                          <span class="flex align-items-center gap-2 w-full">
+                            @if (reply.profileUrl) {
+                              <img
+                                [src]="reply?.profileUrl"
+                                alt=""
+                                class="w-12 h-12 rounded-full"
+                              />
+                            } @else {
+                              <div class="rounded-full flex items-center justify-center bg-[#CCD4E9] w-12 h-12">
+                                <div class="font-bold text-sm text-black">{{ reply?.initials }}</div>
+                              </div>
+                            }
+                            <div class="block">
+                              <div class="flex justify-between mb-1">
+                                <span class="font-bold white-space-nowrap text-[#1F1F1F] capitalize">
+                                  {{ reply?.labelName }}
+                                </span>
+                              </div>
+                              <p class="mb-0 text-xs font-normal break-all">
+                                commented “{{ helper.truncateText(reply?.text, 100) }}”
+                              </p>
+                              <p class="text-xs font-normal mb-0">
+                                {{ reply?.createdAt | date:'MMM dd, yyyy HH:mm' }}
+                              </p>
+                            </div>
+                          </span>
+                        }
+                      </div>
+                    }
+                  </p-accordionTab>
+                </p-accordion>
+                <div class="absolute top-3 right-0 flex items-start gap-1 mr-6 z-10 cursor-pointer">
+                  <img [src]="question?.isSolved ? 'assets/icon/answer-green.svg' : 'assets/icon/answer-grey.svg'" alt="" class="w-5" (click)="setSolved(question)" />
+                  <img [src]="question?.isPinned ? 'assets/icon/pinOn.svg' : 'assets/icon/pinOff.svg'" alt="" class="w-5" (click)="setPinned(question)">
+                </div>
+              </div>
+            }
+          } @empty {
+            <div class="flex justify-center items-center col-span-3">
+              <p class="text-center !text-[#DDD] italic text-sm">No data available</p>
+            </div>
+          }
+        </div>
+      </p-scrollPanel>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 gap-5 lg:w-[35%]">
+    <div class="flex flex-col gap-3">
+      <div class="flex justify-end items-center">
+        <p class="text-xs italic mb-0 p-2">Last updated {{ (dateSyncLiveQ | date:'HH:mm') ?? "--:--" }}</p>
+        <p-button pTooltip="Sync Question" tooltipPosition="left" [text]="true" (click)="getLiveQuestion(true)" [disabled]="isSyncQuestions && isSyncPinned && isSyncSolved">
+          <img src="assets/icon/sync.svg" alt="icon" class="w-7 h-7" [class.pi-spin]="isSyncQuestions && isSyncPinned && isSyncSolved" />
+        </p-button>
+        <p-button pTooltip="Export Question" tooltipPosition="left" [text]="true" (click)="exportLiveQ()" [disabled]="isLoadingExpQuestion">
+          <img src="assets/icon/download.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+        <p-button pTooltip="Slideshow" [text]="true" (click)="checkIsEventLive()">
+          <img src="assets/icon/url.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+      </div>
+      <div class="panel custom-panel h-[50dvh]">
+        <h6>Pinned Questions</h6>
+        <hr class="border border-[#f5f5f5]">
+        <p-scrollPanel [style]="{ width: '100%', height: '90%' }" styleClass="custom-scrollpanel">
+          <div class="grid grid-cols-1">
+            @for (pinned of listPinned; track $index) {
+              <div class="relative">
+                <p-accordion class="w-full custom-accor" expandIcon="pi pi-chevron-down" collapseIcon="pi pi-chevron-up">
+                  <p-accordionTab iconPos="end" [disabled]="pinned?.replies?.length === 0">
+                    <ng-template pTemplate="header">
+                      <div class="flex align-items-center gap-2 w-full">
+                        @if (pinned.profileUrl) {
+                          <img
+                            [src]="pinned?.profileUrl"
+                            alt=""
+                            class="w-12 h-12 rounded-full"
+                          />
+                        } @else {
+                          <div class="rounded-full flex items-center justify-center bg-[#CCD4E9] w-12 h-12">
+                            <div class="font-bold text-sm text-black">{{ pinned?.initials }}</div>
+                          </div>
+                        }
+                        <div class="block w-full">
+                          <div class="flex justify-between mb-1">
+                            <span class="font-bold white-space-nowrap text-[#1F1F1F] capitalize">
+                              {{ pinned?.labelName }}
+                            </span>
+                            <!-- <div class="flex items-start gap-1 mr-6">
+                              <img [src]="pinned?.isSolved ? 'assets/icon/answer-green.svg' : 'assets/icon/answer-grey.svg'" alt="" class="w-5">
+                              <img [src]="pinned?.isPinned ? 'assets/icon/pinOn.svg' : 'assets/icon/pinOff.svg'" alt="" class="w-5">
+                            </div> -->
+                          </div>
+                          <p class="mb-0 text-xs font-normal break-all">
+                            asked “{{ helper.truncateText(pinned?.text, 100) }}”
+                          </p>
+                          <p class="text-xs font-normal mb-0">
+                            {{ pinned?.createdAt | date:'MMM dd, yyyy HH:mm' }}
+                          </p>
+                        </div>
+                      </div>
+                    </ng-template>
+                    @if (pinned?.replies.length > 0) {
+                      <div class="grid grid-cols-1 gap-5">
+                        @for (replyPin of pinned?.replies; track $index) {
+                          <span class="flex align-items-center gap-2 w-full">
+                            @if (replyPin.profileUrl) {
+                              <img
+                                [src]="replyPin?.profileUrl"
+                                alt=""
+                                class="w-12 h-12 rounded-full"
+                              />
+                            } @else {
+                              <div class="rounded-full flex items-center justify-center bg-[#CCD4E9] w-12 h-12">
+                                <div class="font-bold text-sm text-black">{{ replyPin?.initials }}</div>
+                              </div>
+                            }
+                            <div class="block">
+                              <div class="flex justify-between mb-1">
+                                <span class="font-bold white-space-nowrap text-[#1F1F1F] capitalize">
+                                  {{ replyPin?.labelName }}
+                                </span>
+                              </div>
+                              <p class="mb-0 text-xs font-normal break-all">
+                                commented “{{ helper.truncateText(replyPin?.text, 100) }}”
+                              </p>
+                              <p class="text-xs font-normal mb-0">
+                                {{ replyPin?.createdAt | date:'MMM dd, yyyy HH:mm' }}
+                              </p>
+                            </div>
+                          </span>
+                        }
+                      </div>
+                    }
+                  </p-accordionTab>
+                </p-accordion>
+                <div class="absolute top-3 right-0 flex items-start gap-1 mr-6 cursor-pointer z-10">
+                  <img [src]="pinned?.isSolved ? 'assets/icon/answer-green.svg' : 'assets/icon/answer-grey.svg'" alt="" class="w-5" (click)="setSolved(pinned)" />
+                  <img [src]="pinned?.isPinned ? 'assets/icon/pinOn.svg' : 'assets/icon/pinOff.svg'" alt="" class="w-5" (click)="setPinned(pinned)">
+                </div>
+              </div>
+            } @empty {
+              <div class="flex justify-center items-center col-span-3">
+                <p class="text-center !text-[#DDD] italic text-sm">No data available</p>
+              </div>
+            }
+          </div>
+        </p-scrollPanel>
+      </div>
+    </div>
+    <div class="flex flex-col gap-3">
+      <div class="panel custom-panel h-[55dvh]">
+        <h6>Solved Questions</h6>
+        <hr class="border border-[#f5f5f5]">
+        <p-scrollPanel [style]="{ width: '100%', height: '90%' }" styleClass="custom-scrollpanel">
+          <div class="grid grid-cols-1">
+            @for (solved of listSolved; track $index) {
+              <div class="relative">
+                <p-accordion class="w-full custom-accor-solved" expandIcon="pi pi-chevron-down" collapseIcon="pi pi-chevron-up">
+                  <p-accordionTab iconPos="end" [disabled]="true">
+                    <ng-template pTemplate="header">
+                      <div class="flex align-items-center gap-2 w-full">
+                        @if (solved.profileUrl) {
+                          <img
+                            [src]="solved?.profileUrl"
+                            alt=""
+                            class="w-12 h-12 rounded-full"
+                          />
+                        } @else {
+                          <div class="rounded-full flex items-center justify-center bg-[#CCD4E9] w-12 h-12">
+                            <div class="font-bold text-sm text-black">{{ solved?.initials }}</div>
+                          </div>
+                        }
+                        <div class="block w-full">
+                          <div class="flex justify-between mb-1">
+                            <span class="font-bold white-space-nowrap text-[#1F1F1F] capitalize">
+                              {{ solved?.labelName }}
+                            </span>
+                            <!-- <div class="flex items-start gap-1 mr-6">
+                              <img [src]="solved?.isSolved ? 'assets/icon/answer-green.svg' : 'assets/icon/answer-grey.svg'" alt="" class="w-5">
+                              <img [src]="solved?.isPinned ? 'assets/icon/pinOn.svg' : 'assets/icon/pinOff.svg'" alt="" class="w-5">
+                            </div> -->
+                          </div>
+                          <p class="text-xs font-normal line-clamp-4 mb-0 break-all">
+                            asked “{{ helper.truncateText(solved?.text, 100) }}”
+                          </p>
+                          <p class="text-xs font-normal mb-0">
+                            {{ solved?.createdAt | date:'MMM dd, yyyy HH:mm' }}
+                          </p>
+                        </div>
+                      </div>
+                    </ng-template>
+                    @if (solved?.replies.length > 0) {
+                      <div class="grid grid-cols-1 gap-5">
+                        @for (replySolve of solved?.replies; track $index) {
+                          <span class="flex align-items-center gap-2 w-full">
+                            @if (replySolve.profileUrl) {
+                              <img
+                                [src]="replySolve?.profileUrl"
+                                alt=""
+                                class="w-12 h-12 rounded-full"
+                              />
+                            } @else {
+                              <div class="rounded-full flex items-center justify-center bg-[#CCD4E9] w-12 h-12">
+                                <div class="font-bold text-sm text-black">{{ replySolve?.initials }}</div>
+                              </div>
+                            }
+                            <div class="block">
+                              <div class="flex justify-between mb-1">
+                                <span class="font-bold white-space-nowrap text-[#1F1F1F] capitalize">
+                                  {{ replySolve?.labelName }}
+                                </span>
+                              </div>
+                              <p class="mb-0 text-xs font-normal break-all">
+                                commented “{{ helper.truncateText(replySolve?.text, 100) }}”
+                              </p>
+                              <p class="text-xs font-normal mb-0">
+                                {{ replySolve?.createdAt | date:'MMM dd, yyyy HH:mm' }}
+                              </p>
+                            </div>
+                          </span>
+                        }
+                      </div>
+                    }
+                  </p-accordionTab>
+                </p-accordion>
+                <div class="absolute top-3 right-0 flex items-start gap-1 mr-6 z-10 cursor-pointer">
+                  <img [src]="solved?.isSolved ? 'assets/icon/answer-green.svg' : 'assets/icon/answer-grey.svg'" alt="" class="w-5" (click)="setSolved(solved)" />
+                  <img [src]="solved?.isPinned ? 'assets/icon/pinOn.svg' : 'assets/icon/pinOff.svg'" alt="" class="w-5 cursor-default opacity-35">
+                </div>
+              </div>
+
+            } @empty {
+              <div class="flex justify-center items-center col-span-3">
+                <p class="text-center !text-[#DDD] italic text-sm">No data available</p>
+              </div>
+            }
+          </div>
+        </p-scrollPanel>
+      </div>
+    </div>
+  </div>
+</div>

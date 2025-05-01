@@ -1,0 +1,100 @@
+<div class="p-4 lg:p-10 flex items-center">
+  <p class="text-xl lg:text-[28px] mb-0 font-bold">{{ titlePopup() }}</p>
+  <div class="ml-auto">
+    <i class="cursor-pointer pi pi-times font-bold text-lg lg:text-2xl" (click)="onClose()"></i>
+  </div>
+</div>
+<div class="p-4 lg:p-10 pt-0 overflow-y-auto max-h-[570px]">
+  <form [formGroup]="forms" (ngSubmit)="onSubmit()">
+    <div class="mb-10">
+      <div class="form-group">
+        <p-floatLabel>
+          <input
+            pInputText
+            formControlName="name"
+            [ngClass]="{ 'is-invalid': showErrorFormControl('name') }"
+            maxlength="255"
+          />
+          <label for="name">Title *</label>
+        </p-floatLabel>
+        <alert-error-input
+          [control]="getFormControl('name')"
+          [label]="'Title'"
+        ></alert-error-input>
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <p-dropdown
+            formControlName="position"
+            [options]="positions"
+            optionLabel="name"
+            optionValue="value"
+            [ngClass]="{ 'is-invalid': showErrorFormControl('position') }"
+            (onChange)="onChangePosition($event)"
+          />
+          <label for="position">Position *</label>
+        </p-floatLabel>
+        <alert-error-input
+          [control]="getFormControl('position')"
+          [label]="'Position'"
+        ></alert-error-input>
+        <div><small class="text-red-500" *ngIf="isErrorMaxSplash && forms.value.position == 'splash'">Splash banners have exceeded the maximum limit of 2, please use another banner positions.</small></div>
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <input
+            pInputText
+            formControlName="imageName"
+            [ngClass]="{ 'is-invalid': showErrorFormControl('file') }"
+            readonly="true"
+            class="disabled:!bg-transparent"
+          />
+          <label for="imageName">Media File *</label>
+        </p-floatLabel>
+      </div>
+      <file-upload
+        (onValueChange)="onAddFile($event)"
+        [accept_file]="mediaOpt.accept"
+        [allowedImageTypes]="['image/jpg', 'image/jpeg', 'image/png']"
+        [maxSizeImage]="mediaOpt.maxSizeImage"
+        [maxSizeVideo]="mediaOpt.maxSizeVideo"
+        [showImage]="true"
+        [message]="mediaOpt.message"
+        [type_file]="mediaOpt.type_file"
+        [ratio]="mediaOpt.ratio"
+        [mediaList]="mediatemp"
+      ></file-upload>
+
+      @if (isShowUrl) {
+        <div class="form-group mt-3">
+          <p-floatLabel>
+            <input
+              pInputText
+              formControlName="externalUrl"
+              [ngClass]="{ 'is-invalid': showErrorFormControl('externalUrl') }"
+            />
+            <label for="externalUrl">Link (URL)</label>
+          </p-floatLabel>
+          <alert-error-input
+            [control]="getFormControl('externalUrl')"
+            [label]="'Link (URL)'"
+          ></alert-error-input>
+        </div>
+      }
+    </div>
+
+    <div class="flex justify-end mb-10">
+      <button
+        pButton
+        pRipple
+        label="Save"
+        type="submit"
+        rounded="true"
+        class="primary hover:bg-blue-700"
+      ></button>
+      <!-- [disabled]="forms.invalid || isLoading" -->
+    </div>
+  </form>
+</div>

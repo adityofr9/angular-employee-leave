@@ -1,0 +1,104 @@
+<div class="flex flex-col h-full minh-custom">
+  <app-header
+    [title]="'Master User'"
+    [hasSearch]="hasFilter"
+    [listItems]="listSearch"
+    (onSearch)="searchData($event)"
+    (onSelect)="navigateSelected($event)"
+    (onClearSearch)="searchData($event)"
+    [hasFilter]="false"
+    [hasActionBtn]="false"
+  ></app-header>
+
+  <p-table
+    #dt
+    [columns]="list"
+    [rows]="paginator.limit"
+    [first]="0"
+    [exportHeader]="'customExportHeader'"
+    [value]="list"
+    dataKey="id"
+    [scrollable]="true"
+    styleClass="p-datatable-striped"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    (onSort)="onSort($event)"
+    sortField="name"
+    [sortOrder]="1">
+    <ng-template pTemplate="caption">
+      <!-- <div class="flex justify-between items-center">
+        <h2>Master User</h2>
+        <div class="form-group">
+          <p-iconField iconPosition="left" class="ml-auto">
+            <p-inputIcon>
+              <i class="pi pi-search"></i>
+            </p-inputIcon>
+            <input pInputText type="text" placeholder="Search ..." class="!rounded-full" />
+          </p-iconField>
+        </div>
+      </div> -->
+      <div class="flex justify-end">
+        <p class="!text-[indigo] font-semibold mb-0">Total User : {{ totalItems }}</p>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header" class="bg-[#fff]">
+      <tr>
+        <th pSortableColumn="name">
+          Name
+          <p-sortIcon field="name" />
+        </th>
+        <th pSortableColumn="cin">
+          NIP
+          <p-sortIcon field="cin" />
+        </th>
+        <th pSortableColumn="role">
+          Role
+          <p-sortIcon field="role" />
+        </th>
+        <!-- <th style="width: 100px" alignFrozen="right" pFrozenColumn>
+          Action
+        </th> -->
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-user>
+      <tr>
+        <td>{{ user.name }}</td>
+        <td>{{ user.cin }}</td>
+        <td>{{ user.role }}</td>
+        <!-- <td class="action-list" alignFrozen="right" pFrozenColumn>
+          <div class="flex items-center border-1 border-[#E5E7EB] rounded-[8px] badge shadow-none">
+            <div class="btn border-0 shadow-none cursor-pointer text-[#5EC269] hover:bg-[rgba(229,231,235,0.3)]"
+              [routerLink]="
+                '/u/user-management/pre-registration/edit/' + user.id
+              " routerLinkActive="router-link-active">
+              <i class="pi pi-pencil"></i>
+            </div>
+            <div class="btn border-0 shadow-none cursor-pointer text-[#0072B9] hover:bg-[rgba(229,231,235,0.3)]"
+              [routerLink]="'/u/user-management/pre-registration/' + user.id" routerLinkActive="router-link-active">
+              <i class="pi pi-eye"></i>
+            </div>
+          </div>
+        </td> -->
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="12" class="text-center">
+          <p class="!text-[#919191] italic m-0">No results found</p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <app-paginator-bottom
+    *ngIf="paginator"
+    [data]="paginator"
+    (onValueChange)="pagination($event)"
+    [showPaginator]="true"
+    [customOpt]="[15, 30, 50, 100]"
+    class="mt-auto"
+  ></app-paginator-bottom>
+</div>

@@ -1,0 +1,156 @@
+<form [formGroup]="forms" (ngSubmit)="onSubmit()">
+  <div class="block mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-5">
+      <div class="form-group">
+        <p-floatLabel>
+          <input
+            pInputText
+            pKeyFilter="num"
+            formControlName="presentActivity"
+            (change)="checkNumber($event)"
+            [ngClass]="{
+              'is-invalid': showErrorFormControl('presentActivity'),
+              '!border-none !focus:border-none': !isEdit
+            }"
+            minlength="1"
+            maxlength="2"
+            [readOnly]="!isEdit"
+          />
+          <label for="presentActivity">Present activity</label>
+        </p-floatLabel>
+        <alert-error-input
+          [control]="getFormControl('presentActivity')"
+          [label]="'Present activity'"
+        ></alert-error-input>
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <input
+            pInputText
+            pKeyFilter="num"
+            formControlName="writeReviewActivity"
+            (change)="checkNumber($event)"
+            [ngClass]="{
+              'is-invalid': showErrorFormControl('writeReviewActivity'),
+              '!border-none !focus:border-none': !isEdit
+            }"
+            minlength="1"
+            maxlength="2"
+            [readOnly]="!isEdit"
+          />
+          <label for="writeReviewActivity">Write review activity</label>
+        </p-floatLabel>
+        <alert-error-input
+          [control]="getFormControl('writeReviewActivity')"
+          [label]="'Write review activity'"
+        ></alert-error-input>
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <input
+            pInputText
+            pKeyFilter="num"
+            formControlName="quizActivity"
+            (change)="checkNumber($event)"
+            [ngClass]="{
+              'is-invalid': showErrorFormControl('quizActivity'),
+              '!border-none !focus:border-none': !isEdit
+            }"
+            minlength="1"
+            maxlength="2"
+            [readOnly]="!isEdit"
+          />
+          <label for="quizActivity">Quiz activity</label>
+        </p-floatLabel>
+        <alert-error-input
+          [control]="getFormControl('quizActivity')"
+          [label]="'Quiz activity'"
+        ></alert-error-input>
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <input
+            pInputText
+            pKeyFilter="num"
+            formControlName="attendingBoothActivity"
+            (change)="checkNumber($event)"
+            [ngClass]="{
+              'is-invalid': showErrorFormControl('attendingBoothActivity'),
+              '!border-none !focus:border-none': !isEdit
+            }"
+            minlength="1"
+            maxlength="2"
+            [readOnly]="!isEdit"
+          />
+          <label for="attendingBoothActivity">Attending booth activity</label>
+        </p-floatLabel>
+        <alert-error-input
+          [control]="getFormControl('attendingBoothActivity')"
+          [label]="'Attending booth activity'"
+        ></alert-error-input>
+      </div>
+
+      <div class="form-group">
+        <p-floatLabel>
+          <input
+            pInputText
+            pKeyFilter="num"
+            formControlName="askingActivity"
+            (change)="checkNumber($event)"
+            [ngClass]="{
+              'is-invalid': showErrorFormControl('askingActivity'),
+              '!border-none !focus:border-none': !isEdit
+            }"
+            minlength="1"
+            maxlength="2"
+            [readOnly]="!isEdit"
+          />
+          <label for="askingActivity">Asking activity</label>
+        </p-floatLabel>
+        <alert-error-input
+          [control]="getFormControl('askingActivity')"
+          [label]="'Asking activity'"
+        ></alert-error-input>
+      </div>
+    </div>
+  </div>
+
+  @if (!isEdit) {
+  <div class="flex justify-end">
+    <button
+      pButton
+      pRipple
+      type="button"
+      label="Edit"
+      rounded="true"
+      class="primary"
+      (click)="isEdit = true"
+    ></button>
+  </div>
+  } @else {
+  <div class="flex justify-end gap-8 mt-5">
+    <button
+      pButton
+      pRipple
+      label="Cancel"
+      type="button"
+      rounded="true"
+      outlined="true"
+      class="primary"
+      (click)="isEdit = false; cancel()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Save"
+      type="submit"
+      rounded="true"
+      class="primary"
+    ></button>
+    <!-- [disabled]="forms.invalid || isLoading" -->
+  </div>
+  }
+</form>

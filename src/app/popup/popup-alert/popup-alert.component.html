@@ -1,0 +1,14 @@
+<div class="px-4 pt-4">
+  <img class="w-[80px] !mx-auto flex justify-center" [src]="'assets/media/' + (type != 'Restore' ? 'icon-delete.png' : 'icon-restore.png')" alt="">
+  <p class="!text-[24px] mt-[16px] font-semibold text-center leading-[36px] pb-[24px]">{{ type || 'Delete' }} Selected</p>
+
+  <p class="text-[#9DA3AE] text-center pb-[24px]">
+    Are you sure you want to {{ type != 'Restore' ? 'Delete' : 'Restore' }} these selected items?
+  </p>
+
+</div>
+<div class="px-4 pb-4">
+  <div class="flex justify-content-end gap-2">
+    <button pButton pRipple label="Cancel" (click)="close()" class="w-full shadow-none mr-2 cursor-pointer  text-[16px] bg-transparent border border-[indigo] text-[indigo]" ></button>
+  </div>
+</div>

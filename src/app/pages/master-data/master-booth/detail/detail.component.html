@@ -1,0 +1,224 @@
+<app-header [title]="data?.name ?? 'Booth Name'" [hasFilter]="true" [hasActionBtn]="false"></app-header>
+
+
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
+  <div class="flex flex-col gap-3 col-span-3">
+    <div class="flex items-center justify-between">
+      <h3>Details</h3>
+      <div class="flex">
+        <p-button pTooltip="Edit Booth" [text]="true" (onClick)="onEdit()">
+          <img src="assets/icon/edit.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+        <p-button pTooltip="File Upload" [text]="true" (onClick)="uploadFile()">
+          <img src="assets/icon/uploadPicture.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+      </div>
+    </div>
+    <div class="panel custom-panel h-full">
+      <div class="grid grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="flex flex-col col-span-2 lg:col-span-3">
+          <p class="mb-1">Booth Name</p>
+          <!-- <h2
+            class="mb-4 line-clamp-2"
+            [pTooltip]="tooltipContent"
+            tooltipPosition="bottom"> -->
+          <h3 class="mb-4">
+            {{ data?.name }}
+          </h3>
+          <ng-template #tooltipContent>
+            <div class="flex align-items-center">
+              <span>{{ data?.name }}</span>
+            </div>
+          </ng-template>
+        </div>
+        <div class="flex flex-col">
+          <p class="mb-1">Start Date</p>
+          <p class="font-bold">{{ data?.startedAt | date:'MMM dd, yyyy' }}</p>
+        </div>
+        <div class="flex flex-col">
+          <p class="mb-1">End Date</p>
+          <p class="font-bold">{{ data?.endedAt | date:'MMM dd, yyyy' }}</p>
+        </div>
+        <div class="flex flex-col col-span-2 lg:col-span-1">
+          <p class="mb-1">Assigned to</p>
+          @if (data?.admins) {
+          <p class="font-bold w-fit line-clamp-1" [class.cursor-pointer]="(data?.admins?.length ?? 0) > 1"
+            (mouseenter)="(data?.admins?.length ?? 0) > 1 ? op.toggle($event) : null">
+            {{ data?.assignedTo }}
+          </p>
+          <p-overlayPanel #op>
+            <p-scrollPanel [style]="{ width: '100%', height: '100px' }">
+              <div class="flex flex-col">
+                <small *ngFor="let admin of data?.admins" class="font-semibold truncate">{{ admin?.cin + ' - ' +
+                  admin?.name }}</small>
+              </div>
+            </p-scrollPanel>
+          </p-overlayPanel>
+          }
+        </div>
+        <div class="flex flex-col col-span-2 lg:col-span-3">
+          <p class="mb-1 font-bold">Information</p>
+          <p [innerHTML]="data?.description"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARK: Attendance -->
+  <div class="flex flex-col gap-3 col-span-2">
+    <div class="flex items-center justify-between">
+      <h3>Attendance</h3>
+      <div class="flex items-center">
+        <p class="text-xs italic mb-0 p-2">Last updated {{ (dateSync | date:'HH:mm') ?? "--:--" }}</p>
+        <p-button pTooltip="Sync Attendance" tooltipPosition="bottom" [text]="true" (click)="getAttendees(true)"
+          [disabled]="isSync">
+          <img src="assets/icon/sync.svg" alt="icon" class="w-7 h-7" [class.pi-spin]="isSync" />
+        </p-button>
+        <p-button pTooltip="Download Attendance" [text]="true" (click)="exportAttendance()"
+          [disabled]="isLoadingExpAttend">
+          <img src="assets/icon/download.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+      </div>
+    </div>
+    <div class="panel custom-panel h-full">
+      <div class="block">
+        <p-scrollPanel [style]="{ width: '100%', height: '340px', paddingTop: '1rem' }">
+          @for (attendance of listAttendees; track $index) {
+          <div class="flex items-center gap-6 py-3">
+
+            @if (attendance.displayPicture) {
+              <img
+                [src]="attendance?.displayPicture"
+                alt=""
+                class="w-12 h-12 rounded-full"
+              />
+            } @else {
+              <div class="rounded-full flex items-center justify-center bg-[#CCD4E9] w-12 h-12">
+                <div class="font-bold text-sm text-black">{{ attendance?.initials }}</div>
+              </div>
+            }
+            <div class="block">
+              <p class="font-bold mb-1">{{ attendance?.name }}</p>
+              <p class="text-xs mb-0">{{ attendance?.attendanceDate | date:'MMM dd, yyyy HH:mm' }}</p>
+            </div>
+          </div>
+          <!-- <div class="flex items-center gap-6 py-3">
+              <img src="assets/images/profile-34.jpeg" alt="" class="w-12 h-12 rounded-full">
+              <div class="block">
+                <p class="font-bold mb-1">Agung chandra prawira W</p>
+                <p class="text-xs mb-0">Oct 21, 2023 14:45</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-6 py-3">
+              <img src="assets/images/profile-34.jpeg" alt="" class="w-12 h-12 rounded-full">
+              <div class="block">
+                <p class="font-bold mb-1">Agung chandra prawira W</p>
+                <p class="text-xs mb-0">Oct 21, 2023 14:45</p>
+              </div>
+            </div> -->
+          } @empty {
+          <div class="flex justify-center items-center col-span-3">
+            <p class="text-center !text-[#DDD] italic text-sm">No data available</p>
+          </div>
+          }
+        </p-scrollPanel>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARK: Reviews -->
+  <div class="flex flex-col gap-3 col-span-3">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <h3>Reviews</h3>
+        <p-inputSwitch [(ngModel)]="reviewOn" (onChange)="toggleReview($event)" [disabled]="today > endDate" />
+      </div>
+      <div class="flex items-center">
+        <p class="text-xs italic mb-0 p-2">Last updated {{ (dateSyncReview | date:'HH:mm') ?? "--:--" }}</p>
+        <p-button pTooltip="Sync Reviews" [text]="true" (click)="getReview(true)" [disabled]="isSyncReview">
+          <img src="assets/icon/sync.svg" alt="icon" class="w-7 h-7" [class.pi-spin]="isSyncReview" />
+        </p-button>
+        <p-button pTooltip="Download Recent Reviews" [text]="true" (click)="exportReview()"
+          [disabled]="isLoadingExpReview">
+          <img src="assets/icon/download.svg" alt="icon" class="w-7 h-7" />
+        </p-button>
+      </div>
+    </div>
+    <div class="panel custom-panel h-full">
+      <p-scrollPanel [style]="{ width: '100%', height: '340px' }">
+        @for (reviews of listReviews; track $index) {
+        <div class="flex items-start gap-6">
+          @if (!reviews.profileUrl) {
+          <div class="avatar rounded-full h-12 w-12 bg-[#CCD4E9]">
+            <div class="font-bold">{{ helper.getInitial(reviews?.name) }}</div>
+          </div>
+          } @else {
+          <img [src]="reviews?.profileUrl" alt="" class="w-12 h-12 rounded-full">
+          }
+
+          <div class="flex justify-between gap-5 w-full">
+            <div>
+              <h6 class="text-base">{{ reviews?.name }}</h6>
+              <p class="mb-0 text-xs" style="word-break: break-word;">
+                commented “{{ helper.truncateText(reviews?.comment, 100) }}”
+              </p>
+              <p class="text-xs">{{ reviews?.reviewDate }}</p>
+            </div>
+
+            <p-rating [stars]="5" [(ngModel)]="reviews.rating" [readonly]="true" [cancel]="false">
+              <ng-template pTemplate="onicon">
+                <img src="assets/icon/ratingOn.svg" width="14px" height="14px" />
+              </ng-template>
+              <ng-template pTemplate="officon">
+                <img src="assets/icon/ratingOff.svg" width="14px" height="14px" />
+              </ng-template>
+            </p-rating>
+          </div>
+        </div>
+        } @empty {
+        <div class="flex justify-center items-center col-span-3">
+          <p class="text-center !text-[#DDD] italic text-sm">No data available</p>
+        </div>
+        }
+      </p-scrollPanel>
+    </div>
+  </div>
+
+  <!-- MARK: Quiz -->
+  <div class="flex flex-col gap-3 col-span-2">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <h3>Quiz</h3>
+        <p-inputSwitch [(ngModel)]="quizOn" (onChange)="toggleQuizzes($event)" [disabled]="today > endDate" />
+      </div>
+      <p-button pTooltip="Quiz Settings" [text]="true" (click)="quizSettings()">
+        <img src="assets/icon/settings.svg" alt="icon" class="w-7 h-7" />
+      </p-button>
+    </div>
+    <div class="panel custom-panel h-full">
+      @for (quiz of listQuiz | slice:0:4 ; track $index) {
+      <div class="block">
+        <h6 class="text-base line-clamp-1">{{ quiz?.question }}</h6>
+        <p class="text-xs line-clamp-1">{{ quiz?.answer }}</p>
+      </div>
+      } @empty {
+      <div class="flex flex-col justify-center items-center col-span-3">
+        <p class="text-center !text-[#DDD] italic text-sm mb-1">No data available</p>
+        <a routerLink="quiz" routerLinkActive="router-link-active"
+          class="underline italic text-[indigo] text-sm font-semibold">Click here to create a new one</a>
+      </div>
+      }
+      @if (listQuiz.length > 0) {
+      <div class="w-full text-center">
+        <a
+          routerLinkActive="router-link-active"
+          class="underline text-[indigo] text-sm font-semibold"
+          [ngClass]="{'cursor-not-allowed text-[#DDD]': !quizOn}"
+          [routerLink]="quizOn ? 'quiz' : null">
+          View Details
+        </a>
+      </div>
+      }
+    </div>
+  </div>
+</div>

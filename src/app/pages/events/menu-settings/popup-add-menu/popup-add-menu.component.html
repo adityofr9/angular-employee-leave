@@ -1,0 +1,83 @@
+<div class="p-4 lg:p-10">
+  <div class="mb-10 flex items-center">
+    <p class="text-xl lg:text-[28px] mb-0 font-bold">{{ titlePopup() }}</p>
+    <div class="ml-auto">
+      <i class="cursor-pointer pi pi-times font-bold text-lg lg:text-2xl" (click)="onClose()"></i>
+    </div>
+  </div>
+
+  <form [formGroup]="forms" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <!-- <p-floatLabel>
+        <p-dropdown
+          formControlName="menuId"
+          optionLabel="name"
+          optionValue="id"
+          optionDisabled="disabled"
+          [options]="listMenu"
+          [loading]="isLoadingMenu"
+          [filter]="true"
+          [filterBy]="'name'"
+          (onChange)="onChangeMenu($event)"
+          [ngClass]="{ 'is-invalid': showErrorFormControl('menuId') }"
+        />
+        <label for="menuId">Menu *</label>
+      </p-floatLabel>
+      <alert-error-input [label]="'Menu'" [control]="getFormControl('menuId')"></alert-error-input> -->
+
+      <ng-select
+        [items]="listMenu"
+        [multiple]="false"
+        [searchable]="true"
+        [hideSelected]="true"
+        bindLabel="name"
+        bindValue="id"
+        placeholder="Menu *"
+        class="custom-multiselect p-float-label"
+        formControlName="menuId"
+        [ngClass]="{ 'is-invalid': showErrorFormControl('menuId') }"
+      ></ng-select>
+      <alert-error-input [label]="'Menu'" [control]="getFormControl('menuId')"></alert-error-input>
+    </div>
+
+    @if (isShowPath) {
+      <div class="form-group">
+        <p-floatLabel>
+          <p-dropdown
+            [options]="listPath"
+            optionLabel="label"
+            optionValue="id"
+            formControlName="formId"
+          />
+          <label for="formId">Path</label>
+        </p-floatLabel>
+        <alert-error-input [label]="'Path'"></alert-error-input>
+      </div>
+    }
+    <div class="my-8">
+      <div class="text-lg font-bold mb-4 text-[#1F1F1F]">Access Level</div>
+
+      <div class="flex flex-wrap items-center gap-8">
+        @for (item of options; track $index) {
+          <div class="flex align-items-center">
+            <p-checkbox
+              formControlName="accessLevel"
+              [label]="item.name"
+              [value]="item.value"
+            />
+          </div>
+        }
+      </div>
+    </div>
+    <div class="flex justify-end">
+      <button
+        pButton
+        pRipple
+        label="Save"
+        type="submit"
+        class="shadow-none mt-auto ml-auto !px-12 cursor-pointer bg-[indigo] hover:bg-blue-700 text-white rounded-full"
+      ></button>
+      <!-- [disabled]="forms.invalid || isLoading" -->
+    </div>
+  </form>
+</div>

@@ -1,0 +1,303 @@
+<div class="card flex justify-end mb-3">
+  <button
+    (click)="op.toggle($event)"
+    class="p-[10px] !bg-transparent border-2 !border-[indigo] rounded-lg text-sm text-[#919191] font-bold inline-flex items-center gap-10 cursor-pointer"
+  >
+    <span>Filter</span>
+    <img src="assets/icon/icon-filter.svg" />
+  </button>
+
+  <!-- Panel Filter -->
+  <p-overlayPanel #op [style]="{ maxWidth: '465px' }">
+    <div class="filter-panel flex flex-col w-25rem">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="name" class="font-bold text-black text-sm block mb-3"
+            >Start</label
+          >
+          <div class="form-group">
+            <div class="filter-calendar mb-3">
+              <p-calendar
+                inputId="start"
+                dateFormat="M dd, yy"
+                showClear="true"
+                [maxDate]="endDate ?? ''"
+                [showIcon]="true"
+                [placeholder]="'Start'"
+                [readonlyInput]="true"
+                [(ngModel)]="startDate"
+                (onClear)="startTime = null"
+              />
+            </div>
+
+            <div class="form-group">
+              <div class="filter-calendar end mb-3">
+                <!-- [disabled]="!startDate" -->
+                <p-calendar
+                  inputId="startTime"
+                  showClear="true"
+                  [iconDisplay]="'input'"
+                  [showIcon]="true"
+                  [timeOnly]="true"
+                  [placeholder]="'Time'"
+                  [readonlyInput]="false"
+                  [maxDate]="getLimitTime('start')"
+                  (onBlur)="onBlur($event, 'start')"
+                  (onShow)="onShow($event, 'start')"
+                  [(ngModel)]="startTime"
+                >
+                  <ng-template pTemplate="inputicon" let-clickCallBack="clickCallBack">
+                    <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
+                  </ng-template>
+                  <ng-template pTemplate="incrementicon">
+                    <i class="pi pi-sort-up-fill"></i>
+                  </ng-template>
+                  <ng-template pTemplate="decrementicon">
+                    <i class="pi pi-sort-down-fill"></i>
+                  </ng-template>
+                </p-calendar>
+              </div>
+              <!-- <input
+                #timepickStart
+                type="time"
+                (onBlur)="onBlur($event, 'start')"
+                required="true"
+                class="time-input"
+                (click)="timepickStart.showPicker()"
+              />
+              <i
+                class="pi pi-clock time-icon"
+                (click)="timepickStart.showPicker()"
+              ></i> -->
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label for="name" class="font-bold text-black text-sm block mb-3"
+            >End</label
+          >
+          <div class="form-group">
+            <div class="filter-calendar end mb-3">
+              <p-calendar
+                inputId="end"
+                dateFormat="M dd, yy"
+                showClear="true"
+                [showIcon]="true"
+                [minDate]="startDate ?? ''"
+                [placeholder]="'End'"
+                [readonlyInput]="true"
+                [(ngModel)]="endDate"
+                (onClear)="endTime = null"
+              />
+            </div>
+
+            <div class="form-group">
+              <div class="filter-calendar end mb-3">
+                <!-- [disabled]="!endDate" -->
+                <p-calendar
+                  inputId="endTime"
+                  showClear="true"
+                  [iconDisplay]="'input'"
+                  [showIcon]="true"
+                  [timeOnly]="true"
+                  [placeholder]="'Time'"
+                  [readonlyInput]="false"
+                  [minDate]="getLimitTime('end')"
+                  (onBlur)="onBlur($event, 'end')"
+                  (onShow)="onShow($event, 'end')"
+                  [(ngModel)]="endTime"
+                >
+                  <ng-template pTemplate="inputicon" let-clickCallBack="clickCallBack">
+                    <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
+                  </ng-template>
+                  <ng-template pTemplate="incrementicon">
+                    <i class="pi pi-sort-up-fill"></i>
+                  </ng-template>
+                  <ng-template pTemplate="decrementicon">
+                    <i class="pi pi-sort-down-fill"></i>
+                  </ng-template>
+                </p-calendar>
+              </div>
+
+              <!-- <input
+                #timepickEnd
+                type="time"
+                (onBlur)="onBlur($event, 'start')"
+                required="true"
+                class="time-input"
+                (click)="timepickEnd.showPicker()"
+              />
+              <i
+                class="pi pi-clock time-icon"
+                (click)="timepickEnd.showPicker()"
+              ></i> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="w-full border-2 border-[#DDD] rounded-sm" />
+
+      <div>
+        <label for="name" class="font-bold text-black text-sm block mt-2 mb-3"
+          >Filter by</label
+        >
+        <div class="grid grid-cols-2 gap-4">
+          <div class="form-group mb-2 col-span-2">
+            <ng-select
+              #selectUser
+              [items]="usersList"
+              [multiple]="true"
+              [searchable]="false"
+              [closeOnSelect]="false"
+              [(ngModel)]="selectedUsers"
+              placeholder="User"
+              class="filter-select user-select"
+              (ngModelChange)="updateOptions($event, 'users')"
+            >
+              <ng-template ng-header-tmp>
+                <input
+                  style="width: 100%; line-height: 24px"
+                  type="search"
+                  placeholder="Search"
+                  (input)="filter(selectUser, $event)"
+                />
+              </ng-template>
+              <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                <input id="item-{{ index }}" type="checkbox" [ngModel]="item$.selected" /> {{ item.label }}
+              </ng-template>
+
+              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                <div class="ng-value" *ngFor="let item of items | slice:0:2">
+                    <span class="ng-value-label">{{ item.label }}</span>
+                    <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                </div>
+                <!-- <div class="ng-value" *ngIf="items.length > 2"> -->
+                <div *ngIf="items.length > 2">
+                    <span>...</span>
+                    <!-- <span class="ng-value-label">...</span> -->
+                </div>
+              </ng-template>
+
+            </ng-select>
+          </div>
+
+          <div class="form-group mb-2">
+            <ng-select
+              #selectAction
+              [items]="actionsList"
+              [multiple]="true"
+              [searchable]="false"
+              [closeOnSelect]="false"
+              [(ngModel)]="selectedActions"
+              placeholder="Action"
+              class="filter-select"
+              (ngModelChange)="updateOptions($event, 'actions')"
+            >
+              <ng-template ng-header-tmp>
+                <input
+                  style="width: 100%; line-height: 24px"
+                  type="search"
+                  placeholder="Search"
+                  (input)="filter(selectAction, $event)"
+                />
+              </ng-template>
+              <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                <input id="item-{{ index }}" type="checkbox" [ngModel]="item$.selected" /> {{ item.label }}
+              </ng-template>
+
+              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                <div class="ng-value" *ngFor="let item of items | slice:0:1">
+                    <span class="ng-value-label">{{ item.label }}</span>
+                    <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                </div>
+                <div *ngIf="items.length > 1">
+                    <span>...</span>
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+
+          <!-- <div class="form-group mb-2">
+            <ng-select
+              #selectUser
+              [items]="usersList"
+              [multiple]="true"
+              [searchable]="false"
+              [(ngModel)]="selectedCin"
+              bindLabel="label"
+              bindValue="value"
+              placeholder="NIP"
+              class="filter-select"
+            >
+              <ng-template ng-header-tmp>
+                <input
+                  style="width: 100%; line-height: 24px"
+                  type="search"
+                  (input)="filter(selectUser, $event)"
+                />
+              </ng-template>
+              <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                <input id="item-{{ index }}" type="checkbox" [ngModel]="item$.selected" /> {{ item.label }}
+              </ng-template>
+            </ng-select>
+          </div> -->
+
+          <div class="form-group mb-2">
+            <ng-select
+              #selectSrc
+              [items]="sourcesList"
+              [multiple]="true"
+              [searchable]="false"
+              [closeOnSelect]="false"
+              [(ngModel)]="selectedSources"
+              placeholder="Source"
+              class="filter-select"
+              (ngModelChange)="updateOptions($event, 'sources')"
+            >
+              <ng-template ng-header-tmp>
+                <input
+                  style="width: 100%; line-height: 24px;"
+                  type="search"
+                  placeholder="Search"
+                  (input)="filter(selectSrc, $event)"
+                />
+              </ng-template>
+              <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                <input id="item-{{ index }}" type="checkbox" [ngModel]="item$.selected" /> {{ item.label }}
+              </ng-template>
+
+              <ng-template ng-multi-label-tmp let-items="items" let-clear="clear">
+                <div class="ng-value" *ngFor="let item of items | slice:0:1">
+                    <span class="ng-value-label">{{ item.label }}</span>
+                    <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                </div>
+                <div *ngIf="items.length > 1">
+                  <span>...</span>
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <div class="flex justify-end gap-3">
+          <button
+            (click)="reset()"
+            class="!bg-transparent border-2 !border-[indigo] text-[indigo] text-sm font-bold py-2 px-10 rounded-full items-center cursor-pointer"
+          >
+            Reset
+          </button>
+          <button
+            (click)="applyFilter(); op.toggle($event)"
+            class="bg-[indigo] hover:bg-blue-700 text-white text-sm font-bold py-3 px-10 rounded-full items-center cursor-pointer"
+          >
+            Apply
+          </button>
+        </div>
+      </div>
+    </div>
+  </p-overlayPanel>
+</div>

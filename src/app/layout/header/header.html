@@ -183,7 +183,7 @@
                 </div>
             </div> -->
 
-            <div class="dropdown shrink-0 !ml-0">
+            <div class="dropdown shrink-0 !ml-0" *ngIf="false">
                 <div hlMenu>
                     <button
                         type="button"
@@ -254,10 +254,10 @@
                 <div hlMenu class="!block">
                     <button type="button" hlMenuButton class="group relative flex items-center bg-transparent !cursor-pointer">
                         <div class="profile group-hover:saturate-100">
-                          {{helper.getInitial(user?.name)}}
+                          {{helper.getInitial(user?.firstName + ' ' + user?.lastName)}}
                         </div>
                         <p class="mx-2 mb-0 text-[#4D5562] capitalize">
-                            {{user?.name}}
+                            {{user?.firstName}}
                         </p>
                         <img class="w-[10px]" src="assets/media/icon-caret-down.png" alt="" />
                     </button>

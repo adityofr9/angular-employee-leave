@@ -96,7 +96,7 @@ export class HeaderComponent {
         this.initStore();
 
         this.auth.users$.subscribe(res=>{
-            this.user=res
+          this.user = res;
         })
     }
     async initStore() {
@@ -159,6 +159,6 @@ export class HeaderComponent {
     logout(){
         this.auth.logout();
     }
-    
-    
+
+
 }

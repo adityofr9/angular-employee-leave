@@ -40,7 +40,7 @@ export class AuthService {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     });
-    return lastValueFrom(this.http.post<any>(`${this.apiEnv}/login`, data, { headers }));
+    return lastValueFrom(this.http.get<any>(`${this.apiEnv}/users`, { params: data }));
   }
 
   GET_UserData(){
@@ -63,32 +63,7 @@ export class AuthService {
   }
 
   logout(){
-    lastValueFrom( this.storage.delete('token-x'));
-    lastValueFrom( this.storage.delete('token-adfs'));
-    lastValueFrom( this.storage.delete('users'));
-    lastValueFrom( this.storage.delete('eventData'));
-    // lastValueFrom( this.storage.delete('users'));
-    // lastValueFrom( this.storage.delete('property'));
-    // this.sesServ.removeRole();
-      // this.navbar(true);
-      // setTimeout(()=>{
-      //     window.location.reload();
-      //   },1000);
-
-  }
-
-  logout_end_session(){
-    lastValueFrom( this.storage.delete('token-x'));
-    // lastValueFrom( this.storage.delete('token-adfs'));
-    lastValueFrom( this.storage.delete('users'));
-    lastValueFrom( this.storage.delete('eventData'));
-    // lastValueFrom( this.storage.delete('users'));
-    // lastValueFrom( this.storage.delete('property'));
-    // this.sesServ.removeRole();
-      // this.navbar(true);
-      // setTimeout(()=>{
-      //     window.location.reload();
-      //   },1000);
+    localStorage.removeItem('currentUser');
   }
 
   async showAlertCreds(title: any, message: any, showBg: boolean = false): Promise<boolean> {

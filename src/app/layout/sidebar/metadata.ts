@@ -74,7 +74,7 @@ export const PERMISSIONS_DATA = [
     ]
   },
   {
-    "menuName": "history",
+    "menuName": "users",
     "permissions": [
       {
         "permissionId": 6,
@@ -127,7 +127,7 @@ export const PERMISSIONS_DATA = [
     ]
   },
   {
-    "menuName": "setting",
+    "menuName": "leave",
     "permissions": [
       {
         "permissionId": 6,

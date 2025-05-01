@@ -17,7 +17,13 @@ const routes: Routes = [
       },
 
       {
-        path: 'history',
+        path: 'admin',
+        loadChildren: () =>
+          import('../pages/admins/admins.module').then((m) => m.AdminsModule),
+      },
+
+      {
+        path: 'employee',
         loadChildren: () =>
           import('../pages/history/history.module').then((m) => m.HistoryModule),
       },

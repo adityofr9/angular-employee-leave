@@ -40,10 +40,20 @@
         <td>{{ user.gender }}</td>
         <td class="action-list" alignFrozen="right" pFrozenColumn>
           <div class="flex items-center border-1 border-[#E5E7EB] rounded-[8px] badge shadow-none">
-            <div class="btn border-0 shadow-none cursor-pointer text-[#B21CEA] hover:bg-[rgba(229,231,235,0.3)]"
-              [routerLink]="'/u/user-management/pre-registration/'+user.id" routerLinkActive="router-link-active">
+            <div class="btn border-0 shadow-none cursor-pointer text-green-500 hover:bg-[rgba(229,231,235,0.3)]"
+              >
               <i class="pi pi-eye"></i>
             </div>
+            <div class="btn border-0 shadow-none cursor-pointer text-yellow-500 hover:bg-[rgba(229,231,235,0.3)]"
+              >
+              <i class="pi pi-pencil"></i>
+            </div>
+            @if (user.id !== currUser.id) {
+              <div class="btn border-0 shadow-none cursor-pointer text-red-500 hover:bg-[rgba(229,231,235,0.3)]"
+              >
+                <i class="pi pi-trash"></i>
+              </div>
+            }
           </div>
         </td>
       </tr>

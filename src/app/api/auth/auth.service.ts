@@ -2,10 +2,8 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, lastValueFrom, Observable } from 'rxjs';
 
-import { StorageMap } from '@ngx-pwa/local-storage';
 import { environment } from 'src/environments/environment';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { Users } from './auth.model';
 
 import Swal from 'sweetalert2';
 
@@ -22,11 +20,10 @@ export class AuthService {
   public user = new BehaviorSubject<any>(null)
   users$ = this.user.asObservable()
 
-  users!:Users;
+  users!: any;
 
   constructor(
     private http: HttpClient,
-    private storage: StorageMap
   ) {
 
   }
@@ -44,22 +41,13 @@ export class AuthService {
   }
 
   GET_UserData(){
-    // lastValueFrom(this.http.get<any>(`${this.apiEnv}/cms/v1/am/admin/info`)).then(res=>{
-    lastValueFrom(this.http.get<any>(`${this.apiEnv}/user`)).then(res=>{
-      this.user.next(res);
-      this.users = res;
-      lastValueFrom(this.storage.set('users', res));
-    })
-  }
-
-  userdata(){
-    return lastValueFrom(this.http.get<any>(`${this.apiEnv}/cms/v1/am/admin/info`)).then(res=>{
-      if(res.success){
-        this.user.next(res.data);
-        this.users = res.data;
-        return res.data;
-      }
-    })
+    const userStr = localStorage.getItem('currentUser');
+    if (userStr) {
+      this.user.next(userStr);
+      this.users = userStr;
+    } else {
+      this.logout();
+    }
   }
 
   logout(){

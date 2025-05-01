@@ -20,7 +20,7 @@ const routes: Routes = [
   //Dashboard if login only
   {
     path: 'u',
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     loadChildren: () =>
       import('./layout/main-layout/main-layout.module').then(
         (m) => m.MainLayoutModule
